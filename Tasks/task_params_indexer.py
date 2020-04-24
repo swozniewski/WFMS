@@ -69,7 +69,6 @@ for row in cursor:
         res = estools.bulk_index(data, es)
         if res:
             del data[:]
-        break
     count += 1
 
 estools.bulk_index(data, es)
