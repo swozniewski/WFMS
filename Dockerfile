@@ -4,7 +4,8 @@ LABEL maintainer Ilija Vukotic <ivukotic@cern.ch>
 
 WORKDIR /usr/src/app
 
-COPY Jobs ./
-COPY Tasks ./
+RUN mkdir Jobs && mkdir Tasks
+COPY Jobs Jobs/
+COPY Tasks Tasks/
 
 CMD [ "sleep","9999999" ]
