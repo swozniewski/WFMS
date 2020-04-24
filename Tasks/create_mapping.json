@@ -7,6 +7,13 @@ PUT _ingest/pipeline/tasks_parameters
             "json": {
                 "field": "taskparams"
             }
+        },
+        {
+            "set": {
+                "field": "taskparams.nGBPerJob",
+                "value": "99999999",
+                "if": "ctx.taskparams?.nGBPerJob == 'MAX'"
+            }
         }
     ]
 }
