@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: base-pod
+spec:
+  containers:
+    - name: wfms-manual
+      image: atlasanalyticsservice/wfms:latest
+      env:
+        - name: JOB_ORACLE_USER
+          valueFrom:
+            secretKeyRef:
+              name: oracle-secret
+              key: job_oracle_user
+        - name: JOB_ORACLE_PASS
+          valueFrom:
+            secretKeyRef:
+              name: oracle-secret
+              key: job_oracle_pass
+        - name: JOB_ORACLE_CONNECTION_STRING
+          valueFrom:
+            secretKeyRef:
+              name: oracle-secret
+              key: job_oracle_connection_string
+        - name: JOB_ORACLE_ADG_CONNECTION_STRING
+          valueFrom:
+            secretKeyRef:
+              name: oracle-secret
+              key: job_oracle_adg_connection_string
+        - name: ES_USER
+          valueFrom:
+            secretKeyRef:
+              name: es-auth-fts
+              key: es_user
+        - name: ES_PASS
+          valueFrom:
+            secretKeyRef:
+              name: es-auth-fts
+              key: es_pass
+        - name: ES_HOST
+          valueFrom:
+            secretKeyRef:
+              name: es-auth-fts
+              key: es_host
+  restartPolicy: Never
