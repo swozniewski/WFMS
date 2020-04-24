@@ -2,7 +2,8 @@ FROM atlasanalyticsservice/analytics-ingress-base:latest
 
 LABEL maintainer Ilija Vukotic <ivukotic@cern.ch>
 
-WORKDIR /usr/src/app
+USER analyticssvc
+WORKDIR /home/analyticssvc
 
 RUN mkdir Jobs && mkdir Tasks
 COPY Jobs Jobs/
