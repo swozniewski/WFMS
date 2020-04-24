@@ -11,10 +11,18 @@ if not 'JOB_ORACLE_PASS' in os.environ or not 'JOB_ORACLE_USER' in os.environ:
     print('Please set variables:JOB_ORACLE_USER and JOB_ORACLE_PASS.')
     sys.exit(-1)
 
+
+def OutputTypeHandler(cursor, name, defaultType, size, precision, scale):
+    if defaultType == cx_Oracle.CLOB:
+        return cursor.var(cx_Oracle.LONG_STRING, arraysize=cursor.arraysize)
+
+
 user = os.environ['JOB_ORACLE_USER']
 passw = os.environ['JOB_ORACLE_PASS']
 conn = os.environ['JOB_ORACLE_CONNECTION_STRING'].replace('jdbc:oracle:thin:@//', '')
 con = cx_Oracle.connect(user + '/' + passw + '@' + conn)
+con.outputtypehandler = OutputTypeHandler
+
 print(con.version)
 
 es = estools.get_es_connection()
@@ -39,40 +47,20 @@ cursor = con.cursor()
 
 sel = 'SELECT JEDITASKID, TASKPARAMS FROM ATLAS_PANDA.JEDI_TASKPARAMS '
 sel += 'WHERE JEDITASKID>' + str(mJID)
+sel += ' ORDER BY JEDITASKID ASC'
 print(sel)
 
 cursor.execute(sel)
 
 data = []
-count = 0
+count = 1
 for row in cursor:
     doc = {
-        "_type": "docs",
         "_index": "tasks_parameters_write",
         "pipeline": "tasks_parameters",
         "_id": row[0],
         "taskparams": row[1]
     }
-
-    # if doc['lockedtime']:
-    #     doc['lockedtime'] = str(doc['lockedtime']).replace(' ', 'T')
-    # if doc['statechangetime']:
-    #     doc['statechangetime'] = str(doc['statechangetime']).replace(' ', 'T')
-    # if doc['creationdate']:
-    #     doc['creationdate'] = str(doc['creationdate']).replace(' ', 'T')
-    # if doc['modificationtime']:
-    #     doc['modificationtime'] = str(doc['modificationtime']).replace(' ', 'T')
-    # if doc['starttime']:
-    #     doc['starttime'] = str(doc['starttime']).replace(' ', 'T')
-    # if doc['endtime']:
-    #     doc['endtime'] = str(doc['endtime']).replace(' ', 'T')
-    # if doc['frozentime']:
-    #     doc['frozentime'] = str(doc['frozentime']).replace(' ', 'T')
-    # if doc['rescuetime']:
-    #     doc['rescuetime'] = str(doc['rescuetime']).replace(' ', 'T')
-    # if doc['ttcpredictiondate']:
-    #     doc['ttcpredictiondate'] = str(doc['ttcpredictiondate']).replace(' ', 'T')
-
     data.append(doc)
     # print(doc)
 
@@ -86,6 +74,5 @@ for row in cursor:
 
 estools.bulk_index(data, es)
 print('final count:', count)
-
 
 con.close()
