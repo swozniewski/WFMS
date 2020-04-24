@@ -10,15 +10,6 @@ PUT _ingest/pipeline/tasks_parameters
             }
         },
         {
-            "date": {
-                "field": "ts",
-                "target_field": "timestamp",
-                "formats": [
-                    "ISO8601"
-                ]
-            }
-        },
-        {
             "remove": {
                 "field": [
                     "taskparams"
@@ -28,8 +19,34 @@ PUT _ingest/pipeline/tasks_parameters
     ]
 }
 
-curl -XPOST 'http: //atlas-kibana-dev.mwt2.org:9200/_template/tasks' -d '{ "template": "tasks*",
-"settings": {
+PUT task_parameters-000001
+{
+    "settings": {
+        "index.lifecycle.name": "task_parameters",
+        "index.lifecycle.rollover_alias": "tasks_parameters_write"
+    },
+    "aliases": {
+        "tasks_parameters_write": {
+            "is_write_index": true
+        }
+    }
+}
+
+PUT task_parameters-000001/_doc/1
+{}
+
+
+{
+    "date": {
+        "field": "ts",
+        "target_field": "timestamp",
+        "formats": [
+            "ISO8601"
+        ]
+    }
+},
+
+curl -XPOST 'http: //atlas-kibana-dev.mwt2.org:9200/_template/tasks' -d '{ "template": "tasks*", "settings": {
     "number_of_shards": 5,
     "number_of_replicas": 1
 },

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: base-pod
+  name: manual
 spec:
   containers:
     - name: wfms-manual
