@@ -11,10 +11,9 @@ spec:
       template:
         spec:
           containers:
-            - name: analytics-svc-container
-              image: atlasanalyticsservice/distributed_processing:latest
-              command: ["/run.sh"]
-              args: ["Tasks/run.sh"]
+            - name: wfms-tasks
+              image: atlasanalyticsservice/wfms:latest
+              command: ["Tasks/run.sh"]
               env:
                 - name: JOB_ORACLE_USER
                   valueFrom:

@@ -11,29 +11,28 @@ spec:
       template:
         spec:
           containers:
-          - name: analytics-svc-container
-            image: atlasanalyticsservice/containers:latest
-            command: ["/run.sh"]
-            args: ["/DistributedProcessing/run.sh","Jobs/Enrich/parent_child/"]
-            env:
-            - name: JOB_ORACLE_USER
-              valueFrom:
-                secretKeyRef:
-                  name: oracle-secret
-                  key: job_oracle_user
-            - name: JOB_ORACLE_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: oracle-secret
-                  key: job_oracle_pass
-            - name: JOB_ORACLE_CONNECTION_STRING
-              valueFrom:
-                secretKeyRef:
-                  name: oracle-secret
-                  key: job_oracle_connection_string
-            - name: JOB_ORACLE_ADG_CONNECTION_STRING
-              valueFrom:
-                secretKeyRef:
-                  name: oracle-secret
-                  key: job_oracle_adg_connection_string
+            - name: wfms-jobs-parent-child
+              image: atlasanalyticsservice/wfms:latest
+              command: ["Jobs/Enrich/parent_child/run.sh"]
+              env:
+                - name: JOB_ORACLE_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: oracle-secret
+                      key: job_oracle_user
+                - name: JOB_ORACLE_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      name: oracle-secret
+                      key: job_oracle_pass
+                - name: JOB_ORACLE_CONNECTION_STRING
+                  valueFrom:
+                    secretKeyRef:
+                      name: oracle-secret
+                      key: job_oracle_connection_string
+                - name: JOB_ORACLE_ADG_CONNECTION_STRING
+                  valueFrom:
+                    secretKeyRef:
+                      name: oracle-secret
+                      key: job_oracle_adg_connection_string
           restartPolicy: Never
