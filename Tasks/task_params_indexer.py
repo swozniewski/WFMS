@@ -11,6 +11,15 @@ if not 'JOB_ORACLE_PASS' in os.environ or not 'JOB_ORACLE_USER' in os.environ:
     print('Please set variables:JOB_ORACLE_USER and JOB_ORACLE_PASS.')
     sys.exit(-1)
 
+if not len(sys.argv) == 3:
+    print('Please provide Start and End times in YYYY-mm-DD HH:MM::SS format.')
+    sys.exit(-1)
+
+start_date = sys.argv[1]
+end_date = sys.argv[2]
+
+print('Start date:', start_date, '\t End date:', end_date)
+
 
 def OutputTypeHandler(cursor, name, defaultType, size, precision, scale):
     if defaultType == cx_Oracle.CLOB:
@@ -26,29 +35,38 @@ con.outputtypehandler = OutputTypeHandler
 print(con.version)
 
 es = estools.get_es_connection()
-maxJID = """{
-    "query": {
-        "match_all": {}
-    },
-    "sort": [
-        {
-            "_id": {
-                "order": "desc"
-            }
-        }
-    ],
-    "size": 1
-}"""
 
-res = es.search(index="tasks_parameters_write", body=maxJID)
-mJID = res['hits']['hits'][0]['_id']
+# maxJID = """{
+#     "query": {
+#         "match_all": {}
+#     },
+#     "sort": [
+#         {
+#             "_id": {
+#                 "order": "desc"
+#             }
+#         }
+#     ],
+#     "size": 1
+# }"""
+
+# res = es.search(index="tasks_parameters_write", body=maxJID)
+# mJID = res['hits']['hits'][0]['_id']
 
 cursor = con.cursor()
 
-sel = 'SELECT JEDITASKID, TASKPARAMS FROM ATLAS_PANDA.JEDI_TASKPARAMS '
-sel += 'WHERE JEDITASKID>' + str(mJID)
-sel += ' ORDER BY JEDITASKID ASC'
+# sel = 'SELECT JEDITASKID, TASKPARAMS FROM ATLAS_PANDA.JEDI_TASKPARAMS '
+# sel += 'WHERE JEDITASKID>' + str(mJID)
+# sel += ' ORDER BY JEDITASKID ASC'
+
+sel = 'SELECT JEDI_TASKS.JEDITASKID, TASKPARAMS, CREATIONDATE '
+sel += 'FROM ATLAS_PANDA.JEDI_TASKPARAMS INNER JOIN ATLAS_PANDA.JEDI_TASKS '
+sel += 'ON (JEDI_TASKPARAMS.JEDITASKID=JEDI_TASKS.JEDITASKID) '
+sel += "WHERE JEDI_TASKS.CREATIONDATE >= TO_DATE('" + start_date + "','YYYY - MM - DD HH24: MI: SS') "
+sel += "AND JEDI_TASKS.CREATIONDATE < TO_DATE('" + end_date + "','YYYY - MM - DD HH24: MI: SS') "
+
 print(sel)
+
 
 cursor.execute(sel)
 
@@ -59,7 +77,8 @@ for row in cursor:
         "_index": "tasks_parameters_write",
         "pipeline": "tasks_parameters",
         "_id": row[0],
-        "taskparams": row[1]
+        "taskparams": row[1],
+        "creationdate": row[2]
     }
     data.append(doc)
     # print(doc)
