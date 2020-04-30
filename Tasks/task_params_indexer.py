@@ -36,28 +36,8 @@ print(con.version)
 
 es = estools.get_es_connection()
 
-# maxJID = """{
-#     "query": {
-#         "match_all": {}
-#     },
-#     "sort": [
-#         {
-#             "_id": {
-#                 "order": "desc"
-#             }
-#         }
-#     ],
-#     "size": 1
-# }"""
-
-# res = es.search(index="tasks_parameters_write", body=maxJID)
-# mJID = res['hits']['hits'][0]['_id']
-
 cursor = con.cursor()
 
-# sel = 'SELECT JEDITASKID, TASKPARAMS FROM ATLAS_PANDA.JEDI_TASKPARAMS '
-# sel += 'WHERE JEDITASKID>' + str(mJID)
-# sel += ' ORDER BY JEDITASKID ASC'
 
 sel = 'SELECT JEDI_TASKS.JEDITASKID, TASKPARAMS, CREATIONDATE '
 sel += 'FROM ATLAS_PANDA.JEDI_TASKPARAMS INNER JOIN ATLAS_PANDA.JEDI_TASKS '

@@ -28,8 +28,13 @@ PUT _ingest/pipeline/tasks_parameters
                 "value": "False",
                 "if": "ctx.taskparams?.newSite == false"
             }
+        },
+        {
+            "remove": {
+                "field": "taskparams.skipFilesUsedBy",
+                "ignore_missing": true
+            }
         }
-        
     ]
 }
 
@@ -47,14 +52,12 @@ PUT task_parameters-000001
     }
 }
 
-PUT task_parameters-000001/_doc/20000000
-{}
 
 
 curl -XPOST 'http: //atlas-kibana-dev.mwt2.org:9200/_template/tasks' -d '{ "template": "tasks*", "settings": { "number_of_shards": 5, "number_of_replicas": 1
 },
 "aliases": {
-    "tasks": {}
+"tasks": {}
 },
 "mappings": {
 "task_data": {
