@@ -16,22 +16,12 @@ PUT _ingest/pipeline/tasks_parameters
             }
         },
         {
-            "set": {
-                "field": "taskparams.newSite",
-                "value": "True",
-                "if": "ctx.taskparams?.newSite == true"
-            }
-        },
-        {
-            "set": {
-                "field": "taskparams.newSite",
-                "value": "False",
-                "if": "ctx.taskparams?.newSite == false"
-            }
-        },
-        {
             "remove": {
-                "field": "taskparams.skipFilesUsedBy",
+                "field": [
+                    "taskparams.skipFilesUsedBy",
+                    "taskparams.newSite",
+                    "taskparams.log.value"
+                ],
                 "ignore_missing": true
             }
         }
