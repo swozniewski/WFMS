@@ -11,7 +11,8 @@ import cx_Oracle
 username = os.environ['JOB_ORACLE_USER']
 password = os.environ['JOB_ORACLE_PASS']
 # JOB_ORACLE_CONNECTION_STRING or JOB_ORACLE_ADG_CONNECTION_STRING
-server = os.environ['JOB_ORACLE_CONNECTION_STRING'].replace("jdbc:oracle:thin:@//", "")
+server = os.environ['JOB_ORACLE_CONNECTION_STRING'].replace(
+    "jdbc:oracle:thin:@//", "")
 
 connString = username + "/" + password + "@" + server
 
@@ -19,7 +20,8 @@ connString = username + "/" + password + "@" + server
 con = cx_Oracle.connect(connString)
 print('Oracle version:', con.version)
 
-es = Elasticsearch([{'host': 'atlas-kibana.mwt2.org', 'port': 9200}], timeout=60)
+es = Elasticsearch([{'host': 'atlas-kibana.mwt2.org',
+                     'port': 9200, 'scheme': 'https'}], timeout=60)
 
 
 mergin_job_query = {
@@ -31,7 +33,8 @@ mergin_job_query = {
     }
 }
 
-res = scan(client=es, index='jobs', query=mergin_job_query, scroll='5m', timeout="5m", size=10000)
+res = scan(client=es, index='jobs', query=mergin_job_query,
+           scroll='5m', timeout="5m", size=10000)
 
 counter = 0
 skipped = 0
@@ -42,7 +45,8 @@ new_statuses = {}
 for job in res:
     counter += 1
     if not counter % 1000:
-        print("scanned: ", counter, "\tskipped:", skipped, '\tnew statuses:', new_statuses)
+        print("scanned: ", counter, "\tskipped:",
+              skipped, '\tnew statuses:', new_statuses)
     # print(job)
     # if counter > 1000:
         # break
@@ -58,7 +62,8 @@ for job in res:
 
         # geting info from oracle
         cur = con.cursor()
-        cur.execute('SELECT pandaid, jobstatus FROM ATLAS_PANDAARCH.JOBSARCHIVED WHERE PANDAID IN(' + jbs + ')')
+        cur.execute(
+            'SELECT pandaid, jobstatus FROM ATLAS_PANDAARCH.JOBSARCHIVED WHERE PANDAID IN(' + jbs + ')')
 
         lookedup = []
         for result in cur:

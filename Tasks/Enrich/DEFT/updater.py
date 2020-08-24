@@ -20,7 +20,8 @@ min_tid = df.taskid.min()
 df.set_index("taskid", inplace=True)
 
 # find oldest and newest index that should be scanned
-es = Elasticsearch([{'host': 'atlas-kibana.mwt2.org', 'port': 9200}], timeout=60)
+es = Elasticsearch([{'host': 'atlas-kibana.mwt2.org',
+                     'port': 9200, 'scheme': 'https'}], timeout=60)
 
 min_limit_q = {
     "size": 1,
@@ -41,7 +42,8 @@ min_index = r_min['hits']['hits'][0]['_index']
 print("min index: ", min_index)
 
 # get relevant job indices
-indices = es.cat.indices(index="tasks_archive_*", h="index", request_timeout=600).split('\n')
+indices = es.cat.indices(index="tasks_archive_*",
+                         h="index", request_timeout=600).split('\n')
 indices = sorted(indices)
 indices = [x for x in indices if x != '']
 
@@ -74,7 +76,8 @@ def exec_update(tasks):
     jdf.set_index('taskid', inplace=True)
     # print(jdf.head())
     jc = jdf.join(df).dropna()
-    print('tasks from file:', df.shape[0], '\ttasks from ES:', jdf.shape[0], '\tjoined & cleaned:', jc.shape[0])
+    print('tasks from file:', df.shape[0], '\ttasks from ES:',
+          jdf.shape[0], '\tjoined & cleaned:', jc.shape[0])
     print(jc.head())
 
     data = []
@@ -93,7 +96,8 @@ def exec_update(tasks):
 
 
 tasks = []
-scroll = scan(client=es, index=task_indices, query=task_query, scroll='5m', timeout="5m", size=10000)
+scroll = scan(client=es, index=task_indices, query=task_query,
+              scroll='5m', timeout="5m", size=10000)
 count = 0
 
 for res in scroll:

@@ -8,7 +8,8 @@ import glob
 import pandas as pd
 
 #es = Elasticsearch([{'host': 'localhost', 'port': 9200}], timeout=60)
-es = Elasticsearch([{'host': 'atlas-kibana.mwt2.org', 'port': 9200}], timeout=60)
+es = Elasticsearch(
+    [{'host': 'atlas-kibana.mwt2.org', 'port': 9200, 'scheme': 'https'}], timeout=60)
 
 
 INDEX = 'jobs_archive_*'
@@ -16,16 +17,19 @@ CH_SIZE = 250000
 
 
 def exec_update(jobs, new):
-    old = pd.DataFrame(jobs, columns=['ind', 'PANDAID'] + fields).set_index('PANDAID')
-    old = old[~old.index.duplicated(keep='last')] # drop duplicate jobs in jobs_archive
+    old = pd.DataFrame(
+        jobs, columns=['ind', 'PANDAID'] + fields).set_index('PANDAID')
+    # drop duplicate jobs in jobs_archive
+    old = old[~old.index.duplicated(keep='last')]
     new["ind"] = old["ind"]  # get index before dropping empty entries
-    old = old[old.js_start.notnull()].fillna(0.0)  # filter out entries that have never been updated
+    # filter out entries that have never been updated
+    old = old[old.js_start.notnull()].fillna(0.0)
     old['js_path'] = old['js_path'].astype('str')  # stupid woraround
     old['js_end'] = old['js_end'].astype('str')  # stupid woraround
 
     new = new.fillna(0.0)
-    #old.to_pickle("old.pickle")
-    #new.to_pickle("new.pickle")
+    # old.to_pickle("old.pickle")
+    # new.to_pickle("new.pickle")
 
     dur_fields = ['js_failed', 'js_defined', 'js_holding',
                   'js_merging', 'js_pending', 'js_running', 'js_activated',
@@ -39,7 +43,8 @@ def exec_update(jobs, new):
     # calculate time between records
     for field_name in dur_fields:
         field_filter = old.js_end == field_name
-        delta = new.js_first_state_time.astype('datetime64[ns]') - old[field_filter].js_last_state_time.astype('datetime64[ns]')
+        delta = new.js_first_state_time.astype(
+            'datetime64[ns]') - old[field_filter].js_last_state_time.astype('datetime64[ns]')
         delta = delta.dt.total_seconds().dropna()
         new[field_name] = new[field_name].add(delta, fill_value=0.0)
 
@@ -63,7 +68,6 @@ def exec_update(jobs, new):
             '_id': int(PANDAID),
             'doc': {field: row[field] for field in fields if row[field]}
         })
-        
 
     res = bulk(client=es, actions=data, stats_only=True, timeout="5m")
     print("updated:", res[0], "  issues:", res[1])
@@ -124,14 +128,16 @@ for i in range(gl_min, gl_max + 1, CH_SIZE):
     ch.set_index("PANDAID", inplace=True)
     print("Starting to scroll")
     jobs = []
-    scroll = scan(client=es, index=INDEX, query=job_query, scroll='5m', timeout="5m", size=10000)
+    scroll = scan(client=es, index=INDEX, query=job_query,
+                  scroll='5m', timeout="5m", size=10000)
 
     # looping over all jobs in all these indices
 
     for res in scroll:
         count += 1
         if int(res["_id"]) in ch.index:
-            jobs.append(dict({"PANDAID": int(res['_id']), "ind": res['_index']}, **res["_source"]))
+            jobs.append(
+                dict({"PANDAID": int(res['_id']), "ind": res['_index']}, **res["_source"]))
         if count % 10000 == 0:
             print('scanned:', count)
 

@@ -16,7 +16,8 @@ def get_es_connection():
                 http_auth=(os.environ['ES_USER'], os.environ['ES_PASS'])
             )
         else:
-            es_conn = Elasticsearch([{'host': 'atlas-kibana.mwt2.org', 'port': 9200}])
+            es_conn = Elasticsearch(
+                [{'host': 'atlas-kibana.mwt2.org', 'port': 9200, 'scheme': 'https'}])
         print("connected OK!")
     except es_exceptions.ConnectionError as error:
         print('ConnectionError in get_es_connection: ', error)
@@ -38,7 +39,8 @@ def bulk_index(data, es_conn=None, thread_name=''):
     if es_conn is None:
         es_conn = get_es_connection()
     try:
-        res = helpers.bulk(es_conn, data, raise_on_exception=True, request_timeout=120)
+        res = helpers.bulk(
+            es_conn, data, raise_on_exception=True, request_timeout=120)
         print(thread_name, "inserted:", res[0], 'errors:', res[1])
         success = True
     except es_exceptions.ConnectionError as error:

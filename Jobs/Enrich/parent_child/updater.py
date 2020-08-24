@@ -7,7 +7,8 @@ from elasticsearch.helpers import scan, bulk
 
 import pandas as pd
 
-es = Elasticsearch([{'host': 'atlas-kibana.mwt2.org', 'port': 9200}], timeout=60)
+es = Elasticsearch([{'host': 'atlas-kibana.mwt2.org',
+                     'port': 9200, 'scheme': 'https'}], timeout=60)
 
 INDEX = 'jobs'
 CH_SIZE = 250000
@@ -49,7 +50,8 @@ def exec_update(jobs, df):
     return
 
 
-df = pd.read_csv('/tmp/job_parents_temp.csv', header=None, names=['old_pid', 'new_pid', 'relation_type'])
+df = pd.read_csv('/tmp/job_parents_temp.csv', header=None,
+                 names=['old_pid', 'new_pid', 'relation_type'])
 print('jobs found in the file:', df.old_pid.count())
 
 # leave only retries
@@ -57,7 +59,7 @@ df = df[df.relation_type == 'retry']
 del df['relation_type']
 
 print('jobs to be updated:', df.old_pid.count())
-if df.old_pid.count()==0:
+if df.old_pid.count() == 0:
     print('Since there is nothing to update, will exit now.')
     sys.exit(0)
 
@@ -99,7 +101,8 @@ for i in range(gl_min, gl_max, CH_SIZE):
     ch.set_index("old_pid", inplace=True)
 
     jobs = []
-    scroll = scan(client=es, index=INDEX, query=job_query, scroll='5m', timeout="5m", size=10000)
+    scroll = scan(client=es, index=INDEX, query=job_query,
+                  scroll='5m', timeout="5m", size=10000)
 
     # looping over all jobs in all these indices
 
