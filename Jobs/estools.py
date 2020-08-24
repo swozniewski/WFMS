@@ -12,7 +12,7 @@ def get_es_connection():
     try:
         if 'ES_USER' in os.environ and 'ES_PASS' in os.environ and 'ES_HOST' in os.environ:
             es_conn = Elasticsearch(
-                [{'host': os.environ['ES_HOST'], 'port': 9200}],
+                [{'host': os.environ['ES_HOST'], 'port': 9200, 'scheme': 'https'}],
                 http_auth=(os.environ['ES_USER'], os.environ['ES_PASS'])
             )
         else:
