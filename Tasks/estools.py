@@ -12,7 +12,7 @@ def get_es_connection():
     try:
         if 'ES_USER' in os.environ and 'ES_PASS' in os.environ and 'ES_HOST' in os.environ:
             es_conn = Elasticsearch(
-                [{'host': os.environ['ES_HOST'], 'port': 9200}],
+                [{'host': os.environ['ES_HOST'], 'port': 9200, 'scheme': 'https'}],
                 http_auth=(os.environ['ES_USER'], os.environ['ES_PASS'])
             )
         else:
@@ -38,7 +38,8 @@ def bulk_index(data, es_conn=None, thread_name=''):
     if es_conn is None:
         es_conn = get_es_connection()
     try:
-        res = helpers.bulk(es_conn, data, raise_on_exception=True, request_timeout=120)
+        res = helpers.bulk(
+            es_conn, data, raise_on_exception=True, request_timeout=120)
         print(thread_name, "inserted:", res[0], 'errors:', res[1])
         success = True
     except es_exceptions.ConnectionError as error:
