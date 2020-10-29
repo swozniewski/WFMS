@@ -28,7 +28,8 @@ def OutputTypeHandler(cursor, name, defaultType, size, precision, scale):
 
 user = os.environ['JOB_ORACLE_USER']
 passw = os.environ['JOB_ORACLE_PASS']
-conn = os.environ['JOB_ORACLE_CONNECTION_STRING'].replace('jdbc:oracle:thin:@//', '')
+conn = os.environ['JOB_ORACLE_CONNECTION_STRING'].replace(
+    'jdbc:oracle:thin:@//', '')
 con = cx_Oracle.connect(user + '/' + passw + '@' + conn)
 con.outputtypehandler = OutputTypeHandler
 
@@ -39,11 +40,13 @@ es = estools.get_es_connection()
 cursor = con.cursor()
 
 
-sel = 'SELECT JEDI_TASKS.JEDITASKID, TASKPARAMS, CREATIONDATE '
+sel = 'SELECT JEDI_TASKS.JEDITASKID, JEDI_TASKS.STATUS, TASKPARAMS, CREATIONDATE '
 sel += 'FROM ATLAS_PANDA.JEDI_TASKPARAMS INNER JOIN ATLAS_PANDA.JEDI_TASKS '
 sel += 'ON (JEDI_TASKPARAMS.JEDITASKID=JEDI_TASKS.JEDITASKID) '
-sel += "WHERE JEDI_TASKS.CREATIONDATE >= TO_DATE('" + start_date + "','YYYY - MM - DD HH24: MI: SS') "
-sel += "AND JEDI_TASKS.CREATIONDATE < TO_DATE('" + end_date + "','YYYY - MM - DD HH24: MI: SS') "
+sel += "WHERE JEDI_TASKS.CREATIONDATE >= TO_DATE('" + \
+    start_date + "','YYYY - MM - DD HH24: MI: SS') "
+sel += "AND JEDI_TASKS.CREATIONDATE < TO_DATE('" + \
+    end_date + "','YYYY - MM - DD HH24: MI: SS') "
 
 print(sel)
 
