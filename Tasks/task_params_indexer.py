@@ -60,8 +60,9 @@ for row in cursor:
         "_index": "tasks_parameters_write",
         "pipeline": "tasks_parameters",
         "_id": row[0],
-        "taskparams": row[1],
-        "creationdate": row[2]
+        "status": row[1],
+        "taskparams": row[2],
+        "creationdate": row[3]
     }
     data.append(doc)
     # print(doc)
