@@ -12,7 +12,7 @@ es = Elasticsearch(
     [{'host': 'atlas-kibana.mwt2.org', 'port': 9200, 'scheme': 'https'}], timeout=60)
 
 
-INDEX = 'jobs_archive_*'
+INDEX = 'jobs_archive-*'
 CH_SIZE = 250000
 
 

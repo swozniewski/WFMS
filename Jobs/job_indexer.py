@@ -111,7 +111,7 @@ for row in cursor:
         doc['creationtime'], doc['starttime'], doc['endtime'], doc['cpuconsumptiontime'])
     (doc['timeGetJob'], doc['timeStageIn'], doc['timeExe'], doc['timeStageOut'],
      doc['timeSetup']) = conversions.deriveTimes(doc['pilottiming'])
-    doc["_index"] = "jobs_archive_" + doc['creationtime'].split('T')[0]
+    doc["_index"] = "jobs_archive_write"
     doc["_id"] = doc['pandaid']
 
     data.append(doc)
