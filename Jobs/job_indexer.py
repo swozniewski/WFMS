@@ -23,13 +23,15 @@ print('Start date:', start_date, '\t End date:', end_date)
 
 user = os.environ['JOB_ORACLE_USER']
 passw = os.environ['JOB_ORACLE_PASS']
-conn = os.environ['JOB_ORACLE_CONNECTION_STRING'].replace('jdbc:oracle:thin:@//', '')
+conn = os.environ['JOB_ORACLE_CONNECTION_STRING'].replace(
+    'jdbc:oracle:thin:@//', '')
 con = cx_Oracle.connect(user + '/' + passw + '@' + conn)
 print(con.version)
 
 
 cursor = con.cursor()
-not_stored_anymore = ['MAXCPUUNIT', 'MAXDISKUNIT', 'IPCONNECTIVITY', 'MINRAMUNIT', 'PRODDBUPDATETIME', 'NINPUTFILES']
+not_stored_anymore = ['MAXCPUUNIT', 'MAXDISKUNIT',
+                      'IPCONNECTIVITY', 'MINRAMUNIT', 'PRODDBUPDATETIME', 'NINPUTFILES']
 print('omitting columns:', not_stored_anymore)
 
 
@@ -50,7 +52,7 @@ columns = [
     'WORKQUEUE_ID', 'JEDITASKID', 'JOBSUBSTATUS', 'ACTUALCORECOUNT', 'REQID', 'MAXRSS', 'MAXVMEM', 'MAXPSS',
     'AVGRSS', 'AVGVMEM', 'AVGSWAP', 'AVGPSS', 'MAXWALLTIME', 'NUCLEUS', 'EVENTSERVICE', 'FAILEDATTEMPT', 'HS06SEC', 'HS06', 'GSHARE',
     'TOTRCHAR', 'TOTWCHAR', 'TOTRBYTES', 'TOTWBYTES', 'RATERCHAR', 'RATEWCHAR', 'RATERBYTES', 'RATEWBYTES',
-    'PILOTTIMING', 'MEMORY_LEAK', 'RESOURCE_TYPE', 'DISKIO'
+    'PILOTTIMING', 'MEMORY_LEAK', 'RESOURCE_TYPE', 'DISKIO', 'CONTAINER_NAME'
 ]
 
 escolumns = [
@@ -70,7 +72,7 @@ escolumns = [
     'workqueue_id', 'jeditaskid', 'jobsubstatus', 'actualcorecount', 'reqid', 'maxrss', 'maxvmem', 'maxpss',
     'avgrss', 'avgvmem', 'avgswap', 'avgpss', 'maxwalltime', 'nucleus', 'eventservice', 'failedattempt', 'hs06sec', 'hs06', 'gShare',
     'IOcharRead', 'IOcharWritten', 'IObytesRead', 'IObytesWritten', 'IOcharReadRate', 'IOcharWriteRate', 'IObytesReadRate', 'IObytesWriteRate',
-    'pilottiming', 'memory_leak', 'resource_type', 'diskio'
+    'pilottiming', 'memory_leak', 'resource_type', 'diskio', 'container_name'
 ]
 
 sel = 'SELECT '
@@ -78,7 +80,8 @@ sel += ','.join(columns)
 sel += ' FROM ATLAS_PANDA.JOBSARCHIVED4 '
 # sel += 'WHERE PANDAID=4225560422'
 sel += "WHERE STATECHANGETIME >= TO_DATE('" + start_date + \
-    "','YYYY - MM - DD HH24: MI: SS') AND STATECHANGETIME < TO_DATE('" + end_date + "','YYYY - MM - DD HH24: MI: SS') "
+    "','YYYY - MM - DD HH24: MI: SS') AND STATECHANGETIME < TO_DATE('" + \
+    end_date + "','YYYY - MM - DD HH24: MI: SS') "
 
 # print(sel)
 
@@ -97,7 +100,8 @@ for row in cursor:
     if doc['creationtime']:
         doc['creationtime'] = str(doc['creationtime']).replace(' ', 'T')
     if doc['modificationtime']:
-        doc['modificationtime'] = str(doc['modificationtime']).replace(' ', 'T')
+        doc['modificationtime'] = str(
+            doc['modificationtime']).replace(' ', 'T')
     if doc['starttime']:
         doc['starttime'] = str(doc['starttime']).replace(' ', 'T')
     if doc['endtime']:
@@ -106,7 +110,8 @@ for row in cursor:
     if doc['statechangetime']:
         doc['statechangetime'] = str(doc['statechangetime']).replace(' ', 'T')
 
-    (doc['dbTime'], doc['dbData'], doc['workDirSize'], doc['jobmetrics']) = conversions.splitJobmetrics(doc['jobmetrics'])
+    (doc['dbTime'], doc['dbData'], doc['workDirSize'], doc['jobmetrics']
+     ) = conversions.splitJobmetrics(doc['jobmetrics'])
     (doc['wall_time'], doc['cpu_eff'], doc['queue_time']) = conversions.deriveDurationAndCPUeff(
         doc['creationtime'], doc['starttime'], doc['endtime'], doc['cpuconsumptiontime'])
     (doc['timeGetJob'], doc['timeStageIn'], doc['timeExe'], doc['timeStageOut'],
