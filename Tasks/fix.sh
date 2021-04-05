@@ -3,7 +3,7 @@
 # eg. fix.sh 2018-01-01
 echo "  *******************************  fixing tasks   *******************************"
 
-export LD_LIBRARY_PATH=/usr/lib/oracle/12.2/client64/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/opt/oracle/instantclient_21_1:$LD_LIBRARY_PATH
 
 startDate="$1 00:00:00"
 endDate="$1 23:59:59"

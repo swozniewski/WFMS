@@ -4,7 +4,7 @@
 echo "  *******************************  importing parent/child table  *******************************"
 
 
-export LD_LIBRARY_PATH=/usr/lib/oracle/12.2/client64/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/opt/oracle/instantclient_21_1:$LD_LIBRARY_PATH
 
 
 startDate=$(date -u '+%Y-%m-%d' -d "-48hour")
