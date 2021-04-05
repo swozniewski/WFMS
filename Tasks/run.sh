@@ -11,7 +11,7 @@ echo "start date: ${startDate}"
 echo "end date: ${endDate}"
 
 
-python3.6 Tasks/task_indexer.py "${startDate}" "${endDate}" 
+python3 Tasks/task_indexer.py "${startDate}" "${endDate}" 
 rc=$?; if [[ $rc != 0 ]]; then 
     echo "problem with job indexer. Exiting."
     exit $rc

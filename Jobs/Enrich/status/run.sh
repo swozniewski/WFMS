@@ -45,7 +45,7 @@ rc=$?; if [[ $rc != 0 ]]; then
 fi
 
 echo "Running updater"
-python3.6 updater.py
+python3 updater.py
 
 rc=$?; if [[ $rc != 0 ]]; then 
     echo "problem with updater. Exiting."

@@ -11,10 +11,10 @@ echo "start date: ${startDate}"
 echo "end date: ${endDate}"
 
 
-python3.6 Jobs/job_indexer.py "${startDate}" "${endDate}" 
+python3 Jobs/job_indexer.py "${startDate}" "${endDate}" 
 rc=$?; if [[ $rc != 0 ]]; then 
     echo "problem with job indexer. Exiting."
     exit $rc
 fi
 
-echo "Indexing DONE."
+echo "Indexing DONE"

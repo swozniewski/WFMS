@@ -13,7 +13,7 @@ endDate=$(date -u '+%Y-%m-%d' -d "-24hour")
 echo "start date: ${startDate}"
 echo "end date: ${endDate}"
 
-python3.6 parent_child_indexer.py "${startDate}" "${endDate}" 
+python3 parent_child_indexer.py "${startDate}" "${endDate}" 
 rc=$?; if [[ $rc != 0 ]]; then 
     echo "problem with job indexer. Exiting."
     exit $rc
@@ -40,7 +40,7 @@ hdfs dfs -rm -R -f -skipTrash /atlas/analytics/job_parents_temp
 # fi
 
 # echo "Running updater"
-# python3.6 updater.py
+# python3 updater.py
 
 # rc=$?; if [[ $rc != 0 ]]; then 
 #     echo "problem with updater. Exiting."

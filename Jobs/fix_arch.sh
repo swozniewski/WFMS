@@ -13,7 +13,7 @@ echo "end date: ${endDate}"
 
 # JOB_ORACLE_ADG_CONNECTION_STRING
 
-python3.6 job_indexer_arch.py "${startDate}" "${endDate}" 
+python3 job_indexer_arch.py "${startDate}" "${endDate}" 
 rc=$?; if [[ $rc != 0 ]]; then 
     echo "problem with job indexer. Exiting."
     exit $rc
