@@ -4,11 +4,11 @@ import cx_Oracle
 import estools
 import conversions
 
-if not 'JOB_ORACLE_CONNECTION_STRING' in os.environ:
+if 'JOB_ORACLE_CONNECTION_STRING' not in os.environ:
     print('Connection to ORACLE DB not configured. Please set variable: JOB_ORACLE_CONNECTION_STRING ')
     sys.exit(-1)
 
-if not 'JOB_ORACLE_PASS' in os.environ or not 'JOB_ORACLE_USER' in os.environ:
+if 'JOB_ORACLE_PASS' not in os.environ or 'JOB_ORACLE_USER' not in os.environ:
     print('Please set variables:JOB_ORACLE_USER and JOB_ORACLE_PASS.')
     sys.exit(-1)
 
@@ -25,7 +25,7 @@ user = os.environ['JOB_ORACLE_USER']
 passw = os.environ['JOB_ORACLE_PASS']
 conn = os.environ['JOB_ORACLE_CONNECTION_STRING'].replace('jdbc:oracle:thin:@//', '')
 con = cx_Oracle.connect(user + '/' + passw + '@' + conn)
-#con = cx_Oracle.connect(user + '/' + passw + '@adcr_prodsys')
+# con = cx_Oracle.connect(user + '/' + passw + '@adcr_prodsys')
 print(con.version)
 
 
@@ -80,12 +80,12 @@ sel += ','.join(columns)
 sel += ' FROM ATLAS_PANDA.JOBSARCHIVED4 JOBS LEFT JOIN ATLAS_DEFT.T_PRODUCTION_TASK TASKS'
 sel += ' ON JOBS.JEDITASKID = TASKS.TASKID '
 # sel += 'AND PANDAID=4225560422'
-# sel += 'AND ROWNUM < 3' 
+# sel += 'AND ROWNUM < 3'
 sel += "AND JOBS.STATECHANGETIME >= TO_DATE('" + start_date + \
     "','YYYY - MM - DD HH24: MI: SS') AND JOBS.STATECHANGETIME < TO_DATE('" + \
     end_date + "','YYYY - MM - DD HH24: MI: SS') "
 
-#print(sel)
+# print(sel)
 
 cursor.execute(sel)
 
