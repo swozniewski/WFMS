@@ -82,8 +82,8 @@ sel += ' ON JOBS.JEDITASKID = TASKS.TASKID '
 # sel += 'AND PANDAID=4225560422'
 # sel += 'AND ROWNUM < 3'
 sel += "AND JOBS.STATECHANGETIME >= TO_DATE('" + start_date + \
-    "','YYYY - MM - DD HH24: MI: SS') AND JOBS.STATECHANGETIME < TO_DATE('" + \
-    end_date + "','YYYY - MM - DD HH24: MI: SS') "
+    "','YYYY-MM-DD HH24:MI:SS') AND JOBS.STATECHANGETIME < TO_DATE('" + \
+    end_date + "','YYYY-MM-DD HH24:MI:SS') "
 
 # print(sel)
 
