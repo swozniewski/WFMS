@@ -78,16 +78,15 @@ escolumns = [
 sel = 'SELECT '
 sel += ','.join(columns)
 sel += ' FROM ATLAS_PANDAARCH.JOBSARCHIVED JOBS LEFT JOIN ATLAS_DEFT.T_PRODUCTION_TASK TASKS'
-sel += ' ON JOBS.JEDITASKID = TASKS.TASKID '
-# sel += 'AND PANDAID=4225560422'
-# sel += 'AND ROWNUM < 3'
-sel += "AND JOBS.STATECHANGETIME >= TO_DATE('" + start_date + \
-    "','YYYY-MM-DD HH24:MI:SS') AND JOBS.STATECHANGETIME < TO_DATE('" + \
-    end_date + "','YYYY-MM-DD HH24:MI:SS') "
+sel += ' ON JOBS.JEDITASKID = TASKS.TASKID'
+# sel += ' AND PANDAID=4225560422'
+# sel += ' AND ROWNUM < 3'
+sel += " WHERE JOBS.STATECHANGETIME >= TO_DATE( :start_date, 'YYYY-MM-DD HH24:MI:SS')"
+sel += " AND JOBS.STATECHANGETIME < TO_DATE( :end_date, 'YYYY-MM-DD HH24:MI:SS') "
 
 # print(sel)
 
-cursor.execute(sel)
+cursor.execute(sel, start_date=start_date, end_date=end_date)
 
 es = estools.get_es_connection()
 

@@ -58,14 +58,15 @@ escolumns = [
 
 sel = 'SELECT '
 sel += ','.join(columns)
-sel += ' FROM ATLAS_PANDA.JEDI_TASKS '
-# sel += 'WHERE JEDITASKID=123'
-sel += "WHERE MODIFICATIONTIME >= TO_DATE('" + start_date + \
-    "','YYYY - MM - DD HH24: MI: SS') AND MODIFICATIONTIME < TO_DATE('" + end_date + "','YYYY - MM - DD HH24: MI: SS') "
+sel += ' FROM ATLAS_PANDA.JEDI_TASKS'
+# sel += ' WHERE JEDITASKID=123'
+sel += " WHERE MODIFICATIONTIME >= TO_DATE( :start_date, 'YYYY-MM-DD HH24:MI:SS')"
+sel += " AND MODIFICATIONTIME < TO_DATE( :end_date, 'YYYY-MM-DD HH24:MI:SS')"
 
 # print(sel)
 
-cursor.execute(sel)
+cursor.execute(sel, start_date=start_date, end_date=end_date)
+
 
 es = estools.get_es_connection()
 

@@ -3,11 +3,11 @@ import sys
 import cx_Oracle
 import estools
 
-if not 'JOB_ORACLE_CONNECTION_STRING' in os.environ:
+if 'JOB_ORACLE_CONNECTION_STRING' not in os.environ:
     print('Connection to ORACLE DB not configured. Please set variable: JOB_ORACLE_CONNECTION_STRING ')
     sys.exit(-1)
 
-if not 'JOB_ORACLE_PASS' in os.environ or not 'JOB_ORACLE_USER' in os.environ:
+if 'JOB_ORACLE_PASS' not in os.environ or 'JOB_ORACLE_USER' not in os.environ:
     print('Please set variables:JOB_ORACLE_USER and JOB_ORACLE_PASS.')
     sys.exit(-1)
 
@@ -40,18 +40,15 @@ es = estools.get_es_connection()
 cursor = con.cursor()
 
 
-sel = 'SELECT JEDI_TASKS.JEDITASKID, JEDI_TASKS.STATUS, TASKPARAMS, CREATIONDATE '
-sel += 'FROM ATLAS_PANDA.JEDI_TASKPARAMS INNER JOIN ATLAS_PANDA.JEDI_TASKS '
-sel += 'ON (JEDI_TASKPARAMS.JEDITASKID=JEDI_TASKS.JEDITASKID) '
-sel += "WHERE JEDI_TASKS.CREATIONDATE >= TO_DATE('" + \
-    start_date + "','YYYY - MM - DD HH24: MI: SS') "
-sel += "AND JEDI_TASKS.CREATIONDATE < TO_DATE('" + \
-    end_date + "','YYYY - MM - DD HH24: MI: SS') "
+sel = 'SELECT JEDI_TASKS.JEDITASKID, JEDI_TASKS.STATUS, TASKPARAMS, CREATIONDATE'
+sel += ' FROM ATLAS_PANDA.JEDI_TASKPARAMS INNER JOIN ATLAS_PANDA.JEDI_TASKS'
+sel += ' ON (JEDI_TASKPARAMS.JEDITASKID=JEDI_TASKS.JEDITASKID)'
+sel += " WHERE JEDI_TASKS.CREATIONDATE >= TO_DATE( :start_date, 'YYYY-MM-DD HH24:MI:SS')"
+sel += " AND JEDI_TASKS.CREATIONDATE < TO_DATE( :end_date, 'YYYY-MM-DD HH24:MI:SS')"
 
 print(sel)
 
-
-cursor.execute(sel)
+cursor.execute(sel, start_date=start_date, end_date=end_date)
 
 data = []
 count = 1
