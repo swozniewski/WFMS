@@ -53,12 +53,13 @@ cursor.execute(sel, start_date=start_date, end_date=end_date)
 data = []
 count = 1
 for row in cursor:
+    tp = row[2].replace('"True"', 'true').replace('"False"', 'false')
     doc = {
         "_index": "tasks_parameters_write",
         "pipeline": "tasks_parameters",
         "_id": row[0],
         "status": row[1],
-        "taskparams": row[2],
+        "taskparams": tp,
         "creationdate": row[3]
     }
     data.append(doc)
