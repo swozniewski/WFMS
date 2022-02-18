@@ -12,8 +12,8 @@ def get_es_connection():
     try:
         if 'ES_USER' in os.environ and 'ES_PASS' in os.environ and 'ES_HOST' in os.environ:
             es_conn = Elasticsearch(
-                [{'host': os.environ['ES_HOST'], 'port': 9200, 'scheme': 'https'}],
-                http_auth=(os.environ['ES_USER'], os.environ['ES_PASS'])
+                "https://es-atlas1.cern.ch:443/es", #[{'host': os.environ['ES_HOST'], 'port': 443, 'scheme': 'https'}],
+                http_auth=(os.environ['ES_USER'], os.environ['ES_PASS']), ca_certs="/etc/pki/tls/certs/ca-bundle.trust.crt" #verify_certs=False
             )
         else:
             es_conn = Elasticsearch(

@@ -117,7 +117,7 @@ for row in cursor:
         doc['creationtime'], doc['starttime'], doc['endtime'], doc['cpuconsumptiontime'])
     (doc['timeGetJob'], doc['timeStageIn'], doc['timeExe'], doc['timeStageOut'],
      doc['timeSetup']) = conversions.deriveTimes(doc['pilottiming'])
-    doc["_index"] = "jobs_archive_write"
+    doc["_index"] = "atlas_jobs_enr-2021.12.10"
     doc["_id"] = doc['pandaid']
 
     data.append(doc)
@@ -129,6 +129,7 @@ for row in cursor:
         if res:
             del data[:]
     count += 1
+    break
 
 estools.bulk_index(data, es)
 print('final count:', count)
