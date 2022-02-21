@@ -121,7 +121,7 @@ for row in cursor:
         doc['creationtime'], doc['starttime'], doc['endtime'], doc['cpuconsumptiontime'])
     (doc['timeGetJob'], doc['timeStageIn'], doc['timeExe'], doc['timeStageOut'],
      doc['timeSetup']) = conversions.deriveTimes(doc['pilottiming'])
-    doc["_index"] = "atlas_jobs_enr-{}".format(start_date.replace("-", "."))
+    doc["_index"] = "atlas_jobs_enr-{}".split(" ")[0].format(start_date.replace("-", "."))
     doc["_id"] = doc['pandaid']
 
     data.append(doc)
