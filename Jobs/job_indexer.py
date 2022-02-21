@@ -133,7 +133,6 @@ for row in cursor:
         if res:
             del data[:]
     count += 1
-    break
 
 estools.bulk_index(data, es)
 print('final count:', count)
