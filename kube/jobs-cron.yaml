@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: jobs-collector
 spec:
-  schedule: "0 */1 * * *"
+  schedule: "* * * * *"
   suspend: false
   concurrencyPolicy: Forbid
   jobTemplate:
@@ -12,7 +12,8 @@ spec:
         spec:
           containers:
             - name: wfms-jobs
-              image: atlasanalyticsservice/wfms:latest
+              image: my/wfms
+              imagePullPolicy: Never
               command: ["Jobs/run.sh"]
               env:
                 - name: JOB_ORACLE_USER

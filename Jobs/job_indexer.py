@@ -52,7 +52,9 @@ columns = [
     'JOBS.WORKQUEUE_ID', 'JOBS.JEDITASKID', 'JOBS.JOBSUBSTATUS', 'JOBS.ACTUALCORECOUNT', 'JOBS.REQID', 'JOBS.MAXRSS', 'JOBS.MAXVMEM', 'JOBS.MAXPSS',
     'JOBS.AVGRSS', 'JOBS.AVGVMEM', 'JOBS.AVGSWAP', 'JOBS.AVGPSS', 'JOBS.MAXWALLTIME', 'JOBS.NUCLEUS', 'JOBS.EVENTSERVICE', 'JOBS.FAILEDATTEMPT', 'JOBS.HS06SEC', 'JOBS.HS06', 'JOBS.GSHARE',
     'JOBS.TOTRCHAR', 'JOBS.TOTWCHAR', 'JOBS.TOTRBYTES', 'JOBS.TOTWBYTES', 'JOBS.RATERCHAR', 'JOBS.RATEWCHAR', 'JOBS.RATERBYTES', 'JOBS.RATEWBYTES',
-    'JOBS.PILOTTIMING', 'JOBS.MEMORY_LEAK', 'JOBS.RESOURCE_TYPE', 'JOBS.DISKIO', 'JOBS.CONTAINER_NAME', 'TASKS.SIMULATION_TYPE'
+    'JOBS.PILOTTIMING', 'JOBS.MEMORY_LEAK', 'JOBS.RESOURCE_TYPE', 'JOBS.DISKIO', 'JOBS.CONTAINER_NAME', 'TASKS.SIMULATION_TYPE',
+    'JOBS.MAXSWAP', 'JOBS.RATERBYTES', 'JOBS.RATERCHAR', 'JOBS.RATEWBYTES', 'JOBS.RATEWCHAR',
+    'JOBS.TOTRBYTES', 'JOBS.TOTRCHAR', 'JOBS.TOTWBYTES', 'JOBS.TOTWCHAR'
 ]
 
 escolumns = [
@@ -72,7 +74,9 @@ escolumns = [
     'workqueue_id', 'jeditaskid', 'jobsubstatus', 'actualcorecount', 'reqid', 'maxrss', 'maxvmem', 'maxpss',
     'avgrss', 'avgvmem', 'avgswap', 'avgpss', 'maxwalltime', 'nucleus', 'eventservice', 'failedattempt', 'hs06sec', 'hs06', 'gShare',
     'IOcharRead', 'IOcharWritten', 'IObytesRead', 'IObytesWritten', 'IOcharReadRate', 'IOcharWriteRate', 'IObytesReadRate', 'IObytesWriteRate',
-    'pilottiming', 'memory_leak', 'resource_type', 'diskio', 'container_name', 'simulation_type'
+    'pilottiming', 'memory_leak', 'resource_type', 'diskio', 'container_name', 'simulation_type',
+    'maxswap', 'raterbytes', 'raterchar', 'ratewbytes', 'ratewchar',
+    'totrbytes', 'totrchar', 'totwbytes', 'totwchar'
 ]
 
 sel = 'SELECT '
@@ -117,7 +121,7 @@ for row in cursor:
         doc['creationtime'], doc['starttime'], doc['endtime'], doc['cpuconsumptiontime'])
     (doc['timeGetJob'], doc['timeStageIn'], doc['timeExe'], doc['timeStageOut'],
      doc['timeSetup']) = conversions.deriveTimes(doc['pilottiming'])
-    doc["_index"] = "atlas_jobs_enr-2021.12.10"
+    doc["_index"] = "atlas_jobs_enr-{}".format(start_date.replace("-", "."))
     doc["_id"] = doc['pandaid']
 
     data.append(doc)
