@@ -12,12 +12,13 @@ if 'JOB_ORACLE_PASS' not in os.environ or 'JOB_ORACLE_USER' not in os.environ:
     print('Please set variables:JOB_ORACLE_USER and JOB_ORACLE_PASS.')
     sys.exit(-1)
 
-if not len(sys.argv) == 3:
-    print('Pleae provide Start and End times in YYYY-mm-DD HH:MM::SS format.')
+if not len(sys.argv) == 4:
+    print('Please provide Start and End times in YYYY-mm-DD HH:MM::SS format and indexbase.')
     sys.exit(-1)
 
 start_date = sys.argv[1]
 end_date = sys.argv[2]
+indexbase = sys.argv[3]
 
 print('Start date:', start_date, '\tEnd date:', end_date)
 
@@ -52,9 +53,9 @@ columns = [
     'JOBS.WORKQUEUE_ID', 'JOBS.JEDITASKID', 'JOBS.JOBSUBSTATUS', 'JOBS.ACTUALCORECOUNT', 'JOBS.REQID', 'JOBS.MAXRSS', 'JOBS.MAXVMEM', 'JOBS.MAXPSS',
     'JOBS.AVGRSS', 'JOBS.AVGVMEM', 'JOBS.AVGSWAP', 'JOBS.AVGPSS', 'JOBS.MAXWALLTIME', 'JOBS.NUCLEUS', 'JOBS.EVENTSERVICE', 'JOBS.FAILEDATTEMPT', 'JOBS.HS06SEC', 'JOBS.HS06', 'JOBS.GSHARE',
     'JOBS.TOTRCHAR', 'JOBS.TOTWCHAR', 'JOBS.TOTRBYTES', 'JOBS.TOTWBYTES', 'JOBS.RATERCHAR', 'JOBS.RATEWCHAR', 'JOBS.RATERBYTES', 'JOBS.RATEWBYTES',
-    'JOBS.PILOTTIMING', 'JOBS.MEMORY_LEAK', 'JOBS.RESOURCE_TYPE', 'JOBS.DISKIO', 'JOBS.CONTAINER_NAME', 'TASKS.SIMULATION_TYPE',
-    'JOBS.MAXSWAP', 'JOBS.RATERBYTES', 'JOBS.RATERCHAR', 'JOBS.RATEWBYTES', 'JOBS.RATEWCHAR',
-    'JOBS.TOTRBYTES', 'JOBS.TOTRCHAR', 'JOBS.TOTWBYTES', 'JOBS.TOTWCHAR'
+    'JOBS.PILOTTIMING', 'JOBS.MEMORY_LEAK', 'JOBS.RESOURCE_TYPE', 'JOBS.DISKIO', 'JOBS.CONTAINER_NAME', 'TASKS.SIMULATION_TYPE', 'JOBS.MAXSWAP',
+    'JOBS.MAXCPUUNIT', 'JOBS.MAXDISKUNIT', 'JOBS.MINRAMUNIT', 'JOBS.MEANCORECOUNT', 'JOBS.MEMORY_LEAK_X2',
+    'JOBS.IPCONNECTIVITY', 'JOBS.PRODDBUPDATETIME', 'JOBS.NINPUTFILES', 'JOBS.JOBPARAMETERS', 'JOBS.METADATA', 'JOBS.JOB_LABEL'
 ]
 
 escolumns = [
@@ -74,9 +75,9 @@ escolumns = [
     'workqueue_id', 'jeditaskid', 'jobsubstatus', 'actualcorecount', 'reqid', 'maxrss', 'maxvmem', 'maxpss',
     'avgrss', 'avgvmem', 'avgswap', 'avgpss', 'maxwalltime', 'nucleus', 'eventservice', 'failedattempt', 'hs06sec', 'hs06', 'gShare',
     'IOcharRead', 'IOcharWritten', 'IObytesRead', 'IObytesWritten', 'IOcharReadRate', 'IOcharWriteRate', 'IObytesReadRate', 'IObytesWriteRate',
-    'pilottiming', 'memory_leak', 'resource_type', 'diskio', 'container_name', 'simulation_type',
-    'maxswap', 'raterbytes', 'raterchar', 'ratewbytes', 'ratewchar',
-    'totrbytes', 'totrchar', 'totwbytes', 'totwchar'
+    'pilottiming', 'memory_leak', 'resource_type', 'diskio', 'container_name', 'simulation_type', 'maxswap',
+    'maxcpuunit', 'maxdiskunit', 'minramunit', 'meancorecount', 'memory_leak_x2',
+    'ipconnectivity', 'proddbupdatetime', 'n_inputfiles', 'jobparameters', 'metadata', 'joblabel'
 ]
 
 sel = 'SELECT '
@@ -121,7 +122,7 @@ for row in cursor:
         doc['creationtime'], doc['starttime'], doc['endtime'], doc['cpuconsumptiontime'])
     (doc['timeGetJob'], doc['timeStageIn'], doc['timeExe'], doc['timeStageOut'],
      doc['timeSetup']) = conversions.deriveTimes(doc['pilottiming'])
-    doc["_index"] = "atlas_jobs_enr-{}".format(start_date.split(" ")[0].replace("-", "."))
+    doc["_index"] = "-".join([indexbase, start_date.split(" ")[0].replace("-", ".")])
     doc["_id"] = doc['pandaid']
 
     data.append(doc)
@@ -136,6 +137,7 @@ for row in cursor:
 
 estools.bulk_index(data, es)
 print('final count:', count)
+estools.clean_up_oldest_by_diskusage(es, indexbase+"*", 10.0)
 
 
 con.close()

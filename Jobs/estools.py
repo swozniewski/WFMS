@@ -54,3 +54,39 @@ def bulk_index(data, es_conn=None, thread_name=''):
         print('Something seriously wrong happened.', e)
 
     return success
+
+def clean_up_oldest_by_diskusage(es_conn, field_regex, limit_du):
+    success = False
+    diskusage = 0.0
+    indiceslist = []
+    try:
+        indicesinfo = es_conn.cat.indices(field_regex)
+        for line in indicesinfo.split("\n"):
+            entries = line.split()
+            if len(entries)==0:
+                continue
+            indiceslist.append(entries[2])
+            if entries[8].endswith("gb"):
+                diskusage += float(entries[8].replace("gb", ""))
+            elif entries[8].endswith("mb"):
+                diskusage += float(entries[8].replace("mb", "")) / 1000
+            else:
+                diskusage += float(entries[8].replace("b", "")) / 1000000
+        print("Current disk usage: {}GB. Allowed: {}GB".format(diskusage, limit_du))
+        if(diskusage > limit_du):
+            indiceslist.sort()
+            print("Deleting index {}".format(indiceslist[0]))
+            es_conn.indices.delete(index=indiceslist[0])
+            success = clean_up_oldest_by_diskusage(es_conn, field_regex, limit_du)
+        else:
+            success = True
+    except es_exceptions.ConnectionError as error:
+        print('ConnectionError ', error)
+    except es_exceptions.TransportError as error:
+        print('TransportError ', error)
+    except helpers.BulkIndexError as error:
+        print(error)
+    except Exception as e:
+        print('Something seriously wrong happened.', e)
+
+    return success
