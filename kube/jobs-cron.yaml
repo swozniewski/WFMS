@@ -45,4 +45,19 @@ spec:
                     secretKeyRef:
                       name: es-auth-fts
                       key: es_host
+                - name: ESA_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: email-service-account
+                      key: esa_user
+                - name: ESA_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      name: email-service-account
+                      key: esa_pass
+                - name: ESA_EMAIL
+                  valueFrom:
+                    secretKeyRef:
+                      name: email-service-account
+                      key: esa_email
           restartPolicy: Never

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+./configure_ssmtp.sh
+
 echo "  *******************************  importing jobs table  *******************************"
 
 export LD_LIBRARY_PATH=/opt/oracle/instantclient_21_1:$LD_LIBRARY_PATH

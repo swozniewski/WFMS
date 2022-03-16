@@ -1,0 +1,2 @@
+root:ESA_EMAIL:smtp.cern.ch:587
+default:ESA_EMAIL:smtp.cern.ch:587
