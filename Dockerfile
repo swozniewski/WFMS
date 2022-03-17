@@ -1,24 +1,21 @@
-FROM centos/python-38-centos7:latest
+FROM atlasanalyticsservice/analytics-ingress-base:latest
 
 LABEL maintainer Sebastian Wozniewski <sebastian.wozniewski@cern.ch>
 
 WORKDIR /home/analyticssvc
 
 USER root
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
 RUN yum update -y
-RUN yum -y --enablerepo=extras install epel-release
-RUN yum -y install ssmtp
-COPY oracle-instantclient-basic-21.5.0.0.0-1.x86_64.rpm oracle-instantclient-basic-21.5.0.0.0-1.x86_64.rpm
-RUN yum -y install libaio
-RUN rpm -ivh oracle-instantclient-basic-21.5.0.0.0-1.x86_64.rpm
-RUN pip install cx_Oracle
-RUN pip install elasticsearch
-COPY ca-bundle.trust.crt /etc/pki/tls/certs/ca-bundle.trust.crt
-COPY ssmtp /etc/ssmtp/
-RUN chown root:mail /etc/ssmtp/ssmtp.conf
-RUN chown root:mail /etc/ssmtp/revaliases
-COPY configure_ssmtp.sh configure_ssmtp.sh
+RUN yum -y install postfix mailx
+RUN mv /etc/mail.rc /home/analyticssvc/mail.rc
+RUN chown analyticssvc:mail /home/analyticssvc/mail.rc
+RUN ln -s /home/analyticssvc/mail.rc /etc/mail.rc
+USER analyticssvc
 COPY Jobs Jobs/
 COPY Tasks Tasks/
+COPY ca-bundle.trust.crt /etc/pki/tls/certs/ca-bundle.trust.crt
+COPY configure_mailx.sh configure_mailx.sh
 
 CMD [ "sleep","9999999" ]
