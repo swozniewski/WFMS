@@ -8,6 +8,9 @@ USER root
 RUN yum update -y
 RUN yum -y --enablerepo=extras install epel-release
 RUN yum -y install ssmtp
+COPY oracle-instantclient-basic-21.5.0.0.0-1.x86_64.rpm oracle-instantclient-basic-21.5.0.0.0-1.x86_64.rpm
+RUN yum -y install libaio
+RUN rpm -ivh oracle-instantclient-basic-21.5.0.0.0-1.x86_64.rpm
 RUN pip install cx_Oracle
 RUN pip install elasticsearch
 COPY ca-bundle.trust.crt /etc/pki/tls/certs/ca-bundle.trust.crt
