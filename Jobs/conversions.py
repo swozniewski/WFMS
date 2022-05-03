@@ -97,3 +97,80 @@ def TstampNEW(ts):
     else:
         d = strToTS(ts)
         return(int(1000 * time.mktime(d.timetuple())))
+
+def filetype_from_dataset(ds, iotype):
+    if iotype == "log":
+        return "log"
+    if ".AOD." in ds:
+        return "AOD"
+    if ".DAOD_" in ds:
+        return "DAOD_" + ds.split(".DAOD_")[1].split(".")[0]
+    if ".DESDM_" in ds:
+        return "DESDM_" + ds.split(".DESDM_")[1].split(".")[0]
+    if ".DRAW." in ds:
+        return "DRAW"
+    if ".DRAW_" in ds:
+        return "DRAW_" + ds.split(".DRAW_")[1].split(".")[0]
+    if ".ESD." in ds:
+        return "ESD"
+    if ".EVNT." in ds:
+        return "EVNT"
+    if ".HIST." in ds:
+        return "HIST"
+    if ".HIST_HLTMON." in ds:
+        return "HIST_HLTMON"
+    if ".HITS." in ds:
+        return "HITS"
+    if ".NTUP_" in ds:
+        return "NTUP_" + ds.split(".NTUP_")[1].split(".")[0]
+    if ".RDO." in ds:
+        return "RDO"
+    if ".RAW." in ds or ds.endswith(".RAW"):
+        return "RAW"
+    if ".TXT." in ds:
+        return "TXT"
+    if ".log" in ds:
+        return "log"
+    if ".lib." in ds:
+        return "lib"
+    if "hc_test" in ds:
+        return "hc_test"
+    if True: #iotype == "output":
+        if "mmascher" in ds:
+            return "mmascher"
+        if "user" in ds:
+            return "user"
+        if "group.art" in ds:
+            return "group.art"
+        if "group10.perf-tau" in ds:
+            return "group10.perf-tau"
+        if "group.det-indet" in ds:
+            return "group.det-indet"
+        if "group.det-muon" in ds:
+            return "group.det-muon"
+        if "group.perf-egamma" in ds:
+            return "group.perf-egamma"
+        if "group.perf-gener" in ds:
+            return "group.perf-gener"
+        if "group.perf-muons" in ds:
+            return "group.perf-muons"
+        if "group.phys-exotics" in ds:
+            return "group.phys-exotics"
+        if "group.phys-gener" in ds:
+            return "group.phys-gener"
+        if "group.phys-hdbs" in ds:
+            return "group.phys-hdbs"
+        if "group.phys-higgs" in ds:
+            return "group.phys-higgs"
+        if "group.phys-sm" in ds:
+            return "group.phys-sm"
+        #cover all other groups as well
+        if "group." in ds:
+            return "group." + ds.split("group.")[1].split(".")[0]
+        if "destDB" in ds:
+            return "destDB"
+    if ds.startswith("panda.um"):
+        return "panda"
+    if ds.startswith("ddo"):
+        return "ddo"
+    return "UNDEFINED"
