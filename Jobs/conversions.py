@@ -174,3 +174,83 @@ def filetype_from_dataset(ds, iotype):
     if ds.startswith("ddo"):
         return "ddo"
     return "UNDEFINED"
+
+def isAMItag(probe):
+    for key in ['e', 's', 'a', 'r', 'p']:
+        if probe.startswith(key) and probe.replace(key, "").isnumeric():
+            return True
+    return False
+
+def AMItags(source):
+    amitags = []
+    if not source:
+        return amitags
+    entries = source.split("_")
+    for entry in entries:
+        if isAMItag(entry):
+            amitags.append(entry)
+    return amitags
+
+class StringParser:
+    def __init__(self, source, split_char, keydef, mask=None, cleaninput=[], type='auto'):
+        self.print_once = True
+        self.source = source
+        self.split_char = split_char
+        self.mask = mask
+        self.cleaninput = cleaninput
+        self.type = type
+        if isinstance(keydef, list):
+            self.readkeys = False
+            self.keys = keydef
+            self.key_split_char = None
+        else:
+            self.readkeys = True
+            self.keys = None
+            self.key_split_char = keydef
+
+    def checktype(self, val, type):
+        val_out = None
+        if type=='auto':
+            if val.isnumeric():
+                val_out = float(val)
+            else:
+                val_out = str(val)
+        elif type=='i':
+            if val.isnumeric() and int(val)==float(val):
+                val_out = int(val)
+        elif type=='f':
+            if val.isnumeric():
+                val_out = float(val)
+        elif type=='s':
+            val_out = str(val)
+        return val_out
+
+    def parse(self, input):
+        output = {}
+        if not input:
+            return output
+        for entry in self.cleaninput:
+            input = input.replace(entry, "")
+        if not self.split_char in input:
+            return output
+        items = input.split(self.split_char)
+        for i, item in enumerate(items):
+            if self.mask:
+                if i >= len(mask) or not mask[i]:
+                    continue
+            if self.readkeys:
+                keyvalue = item.split(self.key_split_char)
+                val = self.checktype(keyvalue[1], self.type)
+                if val!=None:
+                    output["_".join([self.source, keyvalue[0]])] = val
+            else:
+                if i >= len(self.keys):
+                    self.keys.append("dummy%i"%i)
+                val = self.checktype(item, self.type)
+                if val!=None:
+                    output["_".join([self.source, self.keys[i]])] = val
+        if self.print_once:
+            self.print_once = False
+            print("Splitting %s = %s"%(self.source, input))
+            print(output)
+        return output
