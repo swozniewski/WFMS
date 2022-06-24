@@ -177,6 +177,8 @@ for row in cursor:
     # ) = conversions.splitJobmetrics(doc['jobmetrics']) #done below automatically
     (doc['wall_time'], doc['cpu_eff'], doc['queue_time']) = conversions.deriveDurationAndCPUeff(
         doc['creationtime'], doc['starttime'], doc['endtime'], doc['cpuconsumptiontime'])
+    if doc['actualcorecount']!=0:
+        doc['cpu_eff'] /= doc['actualcorecount']
     (doc['timeGetJob'], doc['timeStageIn'], doc['timeExe'], doc['timeStageOut'],
      doc['timeSetup']) = conversions.deriveTimes(doc['pilottiming'])
     doc["_index"] = "-".join([indexbase, start_date.split(" ")[0].replace("-", ".")])
