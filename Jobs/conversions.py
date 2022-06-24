@@ -98,7 +98,7 @@ def TstampNEW(ts):
         d = strToTS(ts)
         return(int(1000 * time.mktime(d.timetuple())))
 
-def filetype_from_dataset(ds, iotype):
+def datatype_from_dataset(ds, iotype):
     if iotype == "log":
         return "log"
     if ".AOD." in ds:

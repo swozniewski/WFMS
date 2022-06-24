@@ -131,6 +131,14 @@ sel += " AND JOBS.STATECHANGETIME < TO_DATE( :end_date, 'YYYY-MM-DD HH24:MI:SS')
 
 # print(sel)
 
+filecolumns = ['FILES.TYPE', 'FILES.FSIZE', 'FILES.SCOPE', 'FILES.DATASET']
+
+filesel = 'SELECT '
+filesel += ','.join(filecolumns)
+filesel += ' FROM ATLAS_PANDA.FILESTABLE4 FILES'
+filesel += " WHERE FILES.MODIFICATIONTIME != TO_DATE('1970-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS')"
+filesel += " AND FILES.PANDAID = :pandaid"
+
 cursor.execute(sel, start_date=start_date, end_date=end_date)
 
 es = estools.get_es_connection()
@@ -184,6 +192,48 @@ for row in cursor:
     output_amitags = conversions.AMItags(doc['destinationdblock'])
     if len(output_amitags) > 0:
         doc['amitag_output'] = output_amitags[-1]
+
+    #doc['logfilesize'] = 0
+    inputtypes = []
+    outputtypes = []
+    inputscopes = []
+    outputscopes = []
+    undefined_types = []
+    filecursor = con.cursor()
+    filecursor.execute(filesel, pandaid=doc['pandaid'])
+    for filerow in filecursor:
+        filedoc = {}
+        for colName, colValue in zip(filecolumns, filerow):
+            filedoc[colName] = colValue.split('.')[0] if colName == 'FILES.LFN' else colValue
+        datatype = conversions.datatype_from_dataset(filedoc['FILES.DATASET'], filedoc['FILES.TYPE'])
+        if datatype=='log':
+            doc['logfilesize'] = filedoc['FILES.FSIZE']
+            continue
+        datatype = conversions.datatype_from_dataset(filedoc['FILES.DATASET'], filedoc['FILES.TYPE'])
+        if datatype=="UNDEFINED" and filedoc['FILES.DATASET'] not in undefined_types:
+            undefined_types.append(filedoc['FILES.DATASET'])
+        if filedoc['FILES.TYPE']=='input':
+            if datatype not in inputtypes:
+                inputtypes.append(datatype)
+            if filedoc['FILES.SCOPE'] not in inputscopes:
+                inputscopes.append(filedoc['FILES.SCOPE'])
+            continue
+        if filedoc['FILES.TYPE']=='output':
+            if datatype not in outputtypes:
+                outputtypes.append(datatype)
+            if filedoc['FILES.SCOPE'] not in outputscopes:
+                outputscopes.append(filedoc['FILES.SCOPE'])
+            continue
+    inputtypes.sort()
+    inputscopes.sort()
+    outputtypes.sort()
+    outputscopes.sort()
+    undefined_types.sort()
+    doc['inputfiletype'] = ','.join(inputtypes)
+    doc['inputscope'] = ','.join(inputscopes)
+    doc['outputfiletype'] = ','.join(outputtypes)
+    doc['outputscope'] = ','.join(outputscopes)
+    doc['undefined_filetype_datasets'] = ','.join(undefined_types)
 
     data.append(doc)
     # print(doc)
