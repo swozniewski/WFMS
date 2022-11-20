@@ -177,8 +177,33 @@ for row in cursor:
     # ) = conversions.splitJobmetrics(doc['jobmetrics']) #done below automatically
     (doc['wall_time'], doc['cpu_eff'], doc['queue_time']) = conversions.deriveDurationAndCPUeff(
         doc['creationtime'], doc['starttime'], doc['endtime'], doc['cpuconsumptiontime'])
-    if doc['actualcorecount']!=0:
+    doc['walltime_x_core'] = doc['wall_time']
+    doc['io_intensity'] = 0.0
+    doc['maxpss_per_core'] = 0.0
+    doc['walltime_x_core_per_event'] = 0.0
+    doc['hs06secperevent'] = 0.0
+    if doc['wall_time']!=0.0:
+        if isinstance(doc['inputfilebytes'], int):
+            doc['io_intensity'] += doc['inputfilebytes']
+        if isinstance(doc['outputfilebytes'], int):
+            doc['io_intensity'] += doc['outputfilebytes']
+        doc['io_intensity'] /= doc['wall_time']
+    if isinstance(doc['actualcorecount'], int) and doc['actualcorecount']!=0:
         doc['cpu_eff'] /= doc['actualcorecount']
+        doc['walltime_x_core'] *= doc['actualcorecount']
+        doc['io_intensity'] /= doc['actualcorecount']
+        if doc['maxpss']:
+            doc['maxpss_per_core'] = doc['maxpss'] / doc['actualcorecount']
+        else:
+            doc['maxpss_per_core'] = doc['maxpss']
+        if doc['maxrss']:
+            doc['maxrss_per_core'] = doc['maxrss'] / doc['actualcorecount']
+        else:
+            doc['maxrss_per_core'] = doc['maxrss']
+    if doc['nevents']!=0.0:
+        doc['walltime_x_core_per_event'] = doc['walltime_x_core'] / doc['nevents']
+        doc['hs06secperevent'] = doc['hs06sec'] / doc['nevents']
+    doc['walltime_year'] = doc['wall_time'] / 31536000
     (doc['timeGetJob'], doc['timeStageIn'], doc['timeExe'], doc['timeStageOut'],
      doc['timeSetup']) = conversions.deriveTimes(doc['pilottiming'])
     doc["_index"] = "-".join([indexbase, start_date.split(" ")[0].replace("-", ".")])
