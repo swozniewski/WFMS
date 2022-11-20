@@ -1,6 +1,12 @@
 from datetime import datetime
 import time
 
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
 
 def strToTS(d):
     (dat, tim) = d.split('T')
@@ -211,15 +217,15 @@ class StringParser:
     def checktype(self, val, type):
         val_out = None
         if type=='auto':
-            if val.isnumeric():
+            if is_number(val):
                 val_out = float(val)
             else:
                 val_out = str(val)
         elif type=='i':
-            if val.isnumeric() and int(val)==float(val):
+            if is_number(val) and int(val)==float(val):
                 val_out = int(val)
         elif type=='f':
-            if val.isnumeric():
+            if is_number(val):
                 val_out = float(val)
         elif type=='s':
             val_out = str(val)
