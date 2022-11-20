@@ -202,7 +202,10 @@ for row in cursor:
             doc['maxrss_per_core'] = doc['maxrss']
     if doc['nevents']!=0.0:
         doc['walltime_x_core_per_event'] = doc['walltime_x_core'] / doc['nevents']
-        doc['hs06secperevent'] = doc['hs06sec'] / doc['nevents']
+        if doc['hs06sec']:
+            doc['hs06secperevent'] = doc['hs06sec'] / doc['nevents']
+        else:
+            doc['hs06secperevent'] = doc['hs06sec']
     doc['walltime_year'] = doc['wall_time'] / 31536000
     (doc['timeGetJob'], doc['timeStageIn'], doc['timeExe'], doc['timeStageOut'],
      doc['timeSetup']) = conversions.deriveTimes(doc['pilottiming'])
