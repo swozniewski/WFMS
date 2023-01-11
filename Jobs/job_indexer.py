@@ -3,6 +3,7 @@ import sys
 import cx_Oracle
 import estools
 import conversions
+from mapping import mapping
 
 if 'JOB_ORACLE_CONNECTION_STRING' not in os.environ:
     print('Connection to ORACLE DB not configured. Please set variable: JOB_ORACLE_CONNECTION_STRING ')
@@ -145,6 +146,10 @@ es = estools.get_es_connection()
 
 data = []
 count = 0
+indexname = "-".join([indexbase, start_date.split(" ")[0].replace("-", ".")])
+if not es.indices.exists(indexname):
+    print('Creating new index:', indexname)
+    es.indices.create(index=indexname, ignore=400, body=mapping)
 for row in cursor:
     doc = {}
     for colName, colValue in zip(escolumns, row):
@@ -209,7 +214,7 @@ for row in cursor:
     doc['walltime_year'] = doc['wall_time'] / 31536000
     (doc['timeGetJob'], doc['timeStageIn'], doc['timeExe'], doc['timeStageOut'],
      doc['timeSetup']) = conversions.deriveTimes(doc['pilottiming'])
-    doc["_index"] = "-".join([indexbase, start_date.split(" ")[0].replace("-", ".")])
+    doc["_index"] = indexname
     doc["_id"] = doc['pandaid']
 
     for parser in parsers:
