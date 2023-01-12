@@ -147,9 +147,9 @@ es = estools.get_es_connection()
 data = []
 count = 0
 indexname = "-".join([indexbase, start_date.split(" ")[0].replace("-", ".")])
-if not es.indices.exists(indexname):
-    print('Creating new index:', indexname)
-    es.indices.create(index=indexname, ignore=400, body=mapping)
+#if not es.indices.exists(indexname):
+#    print('Creating new index:', indexname)
+#    es.indices.create(index=indexname, ignore=400, body=mapping)
 for row in cursor:
     doc = {}
     for colName, colValue in zip(escolumns, row):
