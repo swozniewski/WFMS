@@ -1,0 +1,3 @@
+[submodule "Jobs/electricitymaps-scraper"]
+	path = Jobs/electricitymaps-scraper
+	url = https://gitlab.cern.ch/bbrueers/electricitymaps-scraper

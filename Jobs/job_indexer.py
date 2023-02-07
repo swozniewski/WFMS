@@ -4,6 +4,7 @@ import cx_Oracle
 import estools
 import conversions
 from mapping import mapping
+from electricitymaps-scraper.retrieveInfo import getSiteToCO2eMap
 
 if 'JOB_ORACLE_CONNECTION_STRING' not in os.environ:
     print('Connection to ORACLE DB not configured. Please set variable: JOB_ORACLE_CONNECTION_STRING ')
@@ -30,12 +31,12 @@ con = cx_Oracle.connect(user + '/' + passw + '@' + conn)
 # con = cx_Oracle.connect(user + '/' + passw + '@adcr_prodsys')
 print(con.version)
 
+siteToCO2eMap = getSiteToCO2eMap()
 
 cursor = con.cursor()
 not_stored_anymore = ['MAXCPUUNIT', 'MAXDISKUNIT',
                       'IPCONNECTIVITY', 'MINRAMUNIT', 'PRODDBUPDATETIME', 'NINPUTFILES', 'VO']
 print('omitting columns:', not_stored_anymore)
-
 
 columns = [
     'JOBS.PANDAID', 'JOBS.JOBDEFINITIONID', 'JOBS.SCHEDULERID', 'JOBS.PILOTID', 'JOBS.CREATIONTIME', 'JOBS.CREATIONHOST', 'JOBS.MODIFICATIONTIME',
@@ -216,6 +217,10 @@ for row in cursor:
      doc['timeSetup']) = conversions.deriveTimes(doc['pilottiming'])
     doc["_index"] = indexname
     doc["_id"] = doc['pandaid']
+
+    ## co2e per kWh and site
+    doc["co2e"] = siteToCO2eMap[ doc["computingsite"] ] * 1000 * doc["cpuconsumptiontime"] / 3600.           * 12.0
+    #                co2e/kWh (converted to Wh )               * time (in seconds --> divide by 3600 for h)  * watts/core (average value type "Any" from https://github.com/GreenAlgorithms/green-algorithms-tool/blob/master/data/v2.1/TDP_cpu.csv)
 
     for parser in parsers:
         doc.update(parser.parse(doc[parser.source]))
