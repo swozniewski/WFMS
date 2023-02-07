@@ -221,6 +221,8 @@ for row in cursor:
     ## co2e per kWh and site
     doc["co2e"] = siteToCO2eMap[ doc["computingsite"] ] * 1000 * doc["cpuconsumptiontime"] / 3600.           * 12.0
     #                co2e/kWh (converted to Wh )               * time (in seconds --> divide by 3600 for h)  * watts/core (average value type "Any" from https://github.com/GreenAlgorithms/green-algorithms-tool/blob/master/data/v2.1/TDP_cpu.csv)
+    #To-do: - make dependent on start-/endtime?
+    #       - take different CPUs into account
 
     for parser in parsers:
         doc.update(parser.parse(doc[parser.source]))
