@@ -282,7 +282,7 @@ for row in cursor:
 
 estools.bulk_index(data, es)
 print('final count:', count)
-estools.clean_up_oldest_by_diskusage(es, indexbase+"*", 10.0)
+estools.clean_up_oldest_by_diskusage(es, indexbase+"*", 500.0)
 
 
 con.close()
