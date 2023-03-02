@@ -56,7 +56,8 @@ columns = [
     'JOBS.TOTRCHAR', 'JOBS.TOTWCHAR', 'JOBS.TOTRBYTES', 'JOBS.TOTWBYTES', 'JOBS.RATERCHAR', 'JOBS.RATEWCHAR', 'JOBS.RATERBYTES', 'JOBS.RATEWBYTES',
     'JOBS.PILOTTIMING', 'JOBS.MEMORY_LEAK', 'JOBS.RESOURCE_TYPE', 'JOBS.DISKIO', 'JOBS.CONTAINER_NAME', 'TASKS.SIMULATION_TYPE', 'JOBS.MAXSWAP',
     'JOBS.MAXCPUUNIT', 'JOBS.MAXDISKUNIT', 'JOBS.MINRAMUNIT', 'JOBS.MEANCORECOUNT', 'JOBS.MEMORY_LEAK_X2',
-    'JOBS.IPCONNECTIVITY', 'JOBS.PRODDBUPDATETIME', 'JOBS.NINPUTFILES', 'JOBS.JOBPARAMETERS', 'JOBS.METADATA', 'JOBS.JOB_LABEL'
+    'JOBS.IPCONNECTIVITY', 'JOBS.PRODDBUPDATETIME', 'JOBS.NINPUTFILES', 'JOBS.JOBPARAMETERS', 'JOBS.METADATA', 'JOBS.JOB_LABEL',
+    'JOBS.GCO2_REGIONAL', 'JOBS.GCO2_GLOBAL'
 ]
 
 jedi_columns = [
@@ -100,6 +101,7 @@ escolumns = [
     'pilottiming', 'memory_leak', 'resource_type', 'diskio', 'container_name', 'simulation_type', 'maxswap',
     'maxcpuunit', 'maxdiskunit', 'minramunit', 'meancorecount', 'memory_leak_x2',
     'ipconnectivity', 'proddbupdatetime', 'n_inputfiles', 'jobparameters', 'metadata', 'joblabel',
+    'gco2_regional', 'gco2_global',
     'jedi_taskname', 'jedi_username', 'jedi_status', 'jedi_modificationtime', 'jedi_creationdate', 'jedi_oldstatus',
     'jedi_frozentime', 'jedi_starttime', 'jedi_taskpriority', 'jedi_endtime', 'jedi_architecture',
     'jedi_transhome', 'jedi_corecount', 'jedi_lockedtime', 'jedi_termcondition', 'jedi_currentpriority', 'jedi_splitrule',
