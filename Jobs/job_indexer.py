@@ -13,13 +13,17 @@ if 'JOB_ORACLE_PASS' not in os.environ or 'JOB_ORACLE_USER' not in os.environ:
     print('Please set variables:JOB_ORACLE_USER and JOB_ORACLE_PASS.')
     sys.exit(-1)
 
-if not len(sys.argv) == 4:
-    print('Please provide Start and End times in YYYY-mm-DD HH:MM::SS format and indexbase.')
+if not len(sys.argv) == 5:
+    print('Please provide Start and End times in YYYY-mm-DD HH:MM::SS format and indexbase and ACTIVE/ARCHIVED.')
     sys.exit(-1)
 
 start_date = sys.argv[1]
 end_date = sys.argv[2]
 indexbase = sys.argv[3]
+datatable = sys.argv[4]
+if datatable!="ACTIVE" and datatable!="ARCHIVED":
+    print('Please provide either ACTIVE or ARCHIVED as fourth argument to select database table.')
+    sys.exit(-1)
 
 print('Start date:', start_date, '\tEnd date:', end_date)
 
@@ -123,7 +127,7 @@ parsers.append(conversions.StringParser("atlasrelease", ".", ["major", "minor", 
 
 sel = 'SELECT '
 sel += ','.join(columns)
-sel += ' FROM ATLAS_PANDA.JOBSARCHIVED4 JOBS LEFT JOIN ATLAS_DEFT.T_PRODUCTION_TASK TASKS'
+sel += ' FROM ATLAS_PANDA.JOBS{table}4 JOBS LEFT JOIN ATLAS_DEFT.T_PRODUCTION_TASK TASKS'.format(table=datatable)
 sel += ' ON JOBS.JEDITASKID = TASKS.TASKID'
 sel += ' LEFT JOIN ATLAS_PANDA.JEDI_TASKS JEDI'
 sel += ' ON TASKS.TASKID = JEDI.JEDITASKID'
@@ -274,6 +278,9 @@ for row in cursor:
 
     data.append(doc)
     # print(doc)
+
+    #clean existing entries from other indices in particular
+    #estools.remove_existing(es, indexbase+"*", doc['_id'])
 
     if not count % 500:
         print(count)

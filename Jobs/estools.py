@@ -90,3 +90,25 @@ def clean_up_oldest_by_diskusage(es_conn, field_regex, limit_du):
         print('Something seriously wrong happened.', e)
 
     return success
+
+def remove_existing(es_conn, index_regex, id):
+    """
+    Checks if id exists and removes such docs.
+    if successful returns True.
+    """
+    success = False
+    if es_conn is None:
+        es_conn = get_es_connection()
+    try:
+        doc = es_conn.search(index=index_regex, _source="pandaid", size=20, body={"query" : {"term" : {"_id" : id}}})
+        for x in doc["hits"]["hits"]:
+            es_conn.delete(x["_index"], id)
+        success = True
+    except es_exceptions.ConnectionError as error:
+        print('ConnectionError ', error)
+    except es_exceptions.TransportError as error:
+        print('TransportError ', error)
+    except Exception as e:
+        print('Something seriously wrong happened.', e)
+
+    return success

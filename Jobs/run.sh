@@ -6,13 +6,19 @@ echo "  *******************************  importing jobs table  *****************
 
 export LD_LIBRARY_PATH=/opt/oracle/instantclient_21_1:$LD_LIBRARY_PATH
 
-startDate=$(date -u '+%Y-%m-%d %H:00:00' -d "-2hour")
-endDate=$(date -u '+%Y-%m-%d %H:00:00' -d "-1hour")
+TIMESHIFT=0
+if [ ! -z "$2" ]
+then
+  TIMESHIFT=$2
+fi
+
+startDate=$(date -u '+%Y-%m-%d %H:00:00' -d "-$((2 + $TIMESHIFT))hour")
+endDate=$(date -u '+%Y-%m-%d %H:00:00' -d "-$((1 + $TIMESHIFT))hour")
 echo "start date: ${startDate}"
 echo "end date: ${endDate}"
 
 
-python3 Jobs/job_indexer.py "${startDate}" "${endDate}" "atlas_jobs_enr" >> job_indexer.log 2>&1
+python3 Jobs/job_indexer.py "${startDate}" "${endDate}" "atlas_jobs_enr" $1 >> job_indexer.log 2>&1
 rc=$?; if [[ $rc != 0 ]]; then
     mail -v -s "ES Job Indexer: CRITICAL." $ESA_EMAIL < job_indexer.log
     echo "CRITICAL: problem with job indexer. Exiting."
