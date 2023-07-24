@@ -65,9 +65,8 @@ def clean_up_oldest_by_diskusage(es_conn, field_regex, limit_du):
             entries = line.split()
             if len(entries)==0:
                 continue
-            if "active" in entries[2]: #don't touch data from the active data table
-                continue
-            indiceslist.append(entries[2])
+            if not "active" in entries[2]: #don't potentially delete data from the active data table
+                indiceslist.append(entries[2])
             if entries[8].endswith("gb"):
                 diskusage += float(entries[8].replace("gb", ""))
             elif entries[8].endswith("mb"):
@@ -97,14 +96,12 @@ def clean_up_oldest_by_diskusage(es_conn, field_regex, limit_du):
 
 def get_diskusage(es_conn, field_regex):
     diskusage = 0.0
-    indiceslist = []
     try:
         indicesinfo = es_conn.cat.indices(field_regex)
         for line in indicesinfo.split("\n"):
             entries = line.split()
             if len(entries)==0:
                 continue
-            indiceslist.append(entries[2])
             if entries[8].endswith("gb"):
                 diskusage += float(entries[8].replace("gb", "")) * 1000000000
             elif entries[8].endswith("mb"):
