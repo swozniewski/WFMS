@@ -70,11 +70,11 @@ def clean_up_oldest_by_diskusage(es_conn, field_regex, limit_du):
             if entries[8].endswith("gb"):
                 diskusage += float(entries[8].replace("gb", ""))
             elif entries[8].endswith("mb"):
-                diskusage += float(entries[8].replace("mb", "")) / 1000
+                diskusage += float(entries[8].replace("mb", "")) / 1024
             elif entries[8].endswith("kb"):
-                diskusage += float(entries[8].replace("kb", "")) / 1000000
+                diskusage += float(entries[8].replace("kb", "")) / 1024**2
             else:
-                diskusage += float(entries[8].replace("b", "")) / 1000000000
+                diskusage += float(entries[8].replace("b", "")) / 1024**3
         print("Current disk usage: {}GB. Allowed: {}GB".format(diskusage, limit_du))
         if(diskusage > limit_du):
             indiceslist.sort()
@@ -103,11 +103,11 @@ def get_diskusage(es_conn, field_regex):
             if len(entries)==0:
                 continue
             if entries[8].endswith("gb"):
-                diskusage += float(entries[8].replace("gb", "")) * 1000000000
+                diskusage += float(entries[8].replace("gb", "")) * 1024**3
             elif entries[8].endswith("mb"):
-                diskusage += float(entries[8].replace("mb", "")) * 1000000
+                diskusage += float(entries[8].replace("mb", "")) * 1024**2
             elif entries[8].endswith("kb"):
-                diskusage += float(entries[8].replace("kb", "")) * 1000
+                diskusage += float(entries[8].replace("kb", "")) * 1024
             else:
                 diskusage += float(entries[8].replace("b", ""))
     except es_exceptions.ConnectionError as error:
