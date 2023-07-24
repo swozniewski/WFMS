@@ -65,13 +65,17 @@ def clean_up_oldest_by_diskusage(es_conn, field_regex, limit_du):
             entries = line.split()
             if len(entries)==0:
                 continue
+            if "active" in entries[2]: #don't touch data from the active data table
+                continue
             indiceslist.append(entries[2])
             if entries[8].endswith("gb"):
                 diskusage += float(entries[8].replace("gb", ""))
             elif entries[8].endswith("mb"):
                 diskusage += float(entries[8].replace("mb", "")) / 1000
+            elif entries[8].endswith("kb"):
+                diskusage += float(entries[8].replace("kb", "")) / 1000000
             else:
-                diskusage += float(entries[8].replace("b", "")) / 1000000
+                diskusage += float(entries[8].replace("b", "")) / 1000000000
         print("Current disk usage: {}GB. Allowed: {}GB".format(diskusage, limit_du))
         if(diskusage > limit_du):
             indiceslist.sort()
@@ -86,6 +90,51 @@ def clean_up_oldest_by_diskusage(es_conn, field_regex, limit_du):
         print('TransportError ', error)
     except helpers.BulkIndexError as error:
         print(error)
+    except Exception as e:
+        print('Something seriously wrong happened.', e)
+
+    return success
+
+def get_diskusage(es_conn, field_regex):
+    diskusage = 0.0
+    indiceslist = []
+    try:
+        indicesinfo = es_conn.cat.indices(field_regex)
+        for line in indicesinfo.split("\n"):
+            entries = line.split()
+            if len(entries)==0:
+                continue
+            indiceslist.append(entries[2])
+            if entries[8].endswith("gb"):
+                diskusage += float(entries[8].replace("gb", "")) * 1000000000
+            elif entries[8].endswith("mb"):
+                diskusage += float(entries[8].replace("mb", "")) * 1000000
+            elif entries[8].endswith("kb"):
+                diskusage += float(entries[8].replace("kb", "")) * 1000
+            else:
+                diskusage += float(entries[8].replace("b", ""))
+    except es_exceptions.ConnectionError as error:
+        print('ConnectionError ', error)
+    except es_exceptions.TransportError as error:
+        print('TransportError ', error)
+    except helpers.BulkIndexError as error:
+        print(error)
+    except Exception as e:
+        print('Something seriously wrong happened.', e)
+
+    return diskusage
+
+def remove_index(es_conn, index):
+    success = False
+    if es_conn is None:
+        es_conn = get_es_connection()
+    try:
+        es_conn.indices.delete(index=index)
+        success = True
+    except es_exceptions.ConnectionError as error:
+        print('ConnectionError ', error)
+    except es_exceptions.TransportError as error:
+        print('TransportError ', error)
     except Exception as e:
         print('Something seriously wrong happened.', e)
 
