@@ -1,9 +1,12 @@
 import os
 import sys
+import datetime
 import cx_Oracle
 import estools
 import conversions
 from mapping import mapping
+
+time_ini=datetime.datetime.now()
 
 if 'JOB_ORACLE_CONNECTION_STRING' not in os.environ:
     print('Connection to ORACLE DB not configured. Please set variable: JOB_ORACLE_CONNECTION_STRING ')
@@ -12,6 +15,8 @@ if 'JOB_ORACLE_CONNECTION_STRING' not in os.environ:
 if 'JOB_ORACLE_PASS' not in os.environ or 'JOB_ORACLE_USER' not in os.environ:
     print('Please set variables:JOB_ORACLE_USER and JOB_ORACLE_PASS.')
     sys.exit(-1)
+
+keep_active_index = False if 'KEEP_ACTIVE_INDEX' not in os.environ else os.environ['KEEP_ACTIVE_INDEX']
 
 if not len(sys.argv) == 5:
     print('Please provide Start and End times in YYYY-mm-DD HH:MM::SS format and indexbase and ACTIVE/ARCHIVED.')
@@ -153,6 +158,10 @@ es = estools.get_es_connection()
 data = []
 count = 0
 indexname = "-".join([indexbase, start_date.split(" ")[0].replace("-", ".")])
+if datatable=="ACTIVE":
+    indexname = "-".join([indexbase, "active"])
+    if not keep_active_index:
+        estools.remove_index(es, indexname)
 #if not es.indices.exists(indexname):
 #    print('Creating new index:', indexname)
 #    es.indices.create(index=indexname, ignore=400, body=mapping)
@@ -293,5 +302,19 @@ estools.bulk_index(data, es)
 print('final count:', count)
 estools.clean_up_oldest_by_diskusage(es, indexbase+"*", 500.0)
 
+print("Push job indexing meta data:")
+mdoc = {}
+mdoc['_index'] = "atlas_esfill_jobsenr"
+if es.indices.exists(index=mdoc['_index']):
+    mdoc['_id'] = es.count(index=mdoc['_index'], body={"query":{"match_all":{}}})["count"] + 1
+else:
+    print('Index %s not found. Creating it...'%mdoc['_index'])
+    mdoc['_id'] = 1
+mdoc['diskusage'] = estools.get_diskusage(es, indexbase+"*")
+mdoc['filleddocs'] = count
+mdoc['datatable'] = datatable
+mdoc['filltime'] = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:00')
+mdoc['fillduration'] = (datetime.datetime.now()-time_ini).total_seconds()
+estools.bulk_index([mdoc], es)
 
 con.close()

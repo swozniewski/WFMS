@@ -11,9 +11,30 @@ if [ ! -z "$2" ]
 then
   TIMESHIFT=$2
 fi
+NXHOURS=1
+if [ ! -z "$3" ]
+then
+  NXHOURS=$3
+fi
+STARTMIN="00"
+ENDMIN="00"
+if (( `date +%M` >= 30 )); then
+    STARTMIN="30"
+    ENDMIN="30"
+fi
 
-startDate=$(date -u '+%Y-%m-%d %H:00:00' -d "-$((2 + $TIMESHIFT))hour")
-endDate=$(date -u '+%Y-%m-%d %H:00:00' -d "-$((1 + $TIMESHIFT))hour")
+#for archived jobs, reduce time interval by 0.5 hours
+if [ "$1" = "ARCHIVED" ]; then
+    if (( `date +%M` >= 30 )); then
+        STARTMIN="00"
+        NXHOURS=$(($NXHOURS - 1))
+    else
+        STARTMIN="30"
+    fi
+fi
+
+startDate=$(date -u "+%Y-%m-%d %H:${STARTMIN}:00" -d "-$(($NXHOURS + $TIMESHIFT))hour")
+endDate=$(date -u "+%Y-%m-%d %H:${ENDMIN}:00" -d "-${TIMESHIFT}hour")
 echo "start date: ${startDate}"
 echo "end date: ${endDate}"
 
