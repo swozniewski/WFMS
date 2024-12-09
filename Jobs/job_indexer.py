@@ -129,6 +129,7 @@ parsers = []
 parsers.append(conversions.StringParser("pilottiming", "|", ["getjob", "stagein", "payload", "stageout", "total_setup"], type='i'))
 parsers.append(conversions.StringParser("jobmetrics", " ", "="))
 parsers.append(conversions.StringParser("atlasrelease", ".", ["major", "minor", "patch"], cleaninput=["Atlas-"], type='i'))
+parsers.append(conversions.StringParser("pilotid", "|", ["stdout", "batchsys", "name", "version"], type='s'))
 
 sel = 'SELECT '
 sel += ','.join(columns)
@@ -232,6 +233,13 @@ for row in cursor:
     doc["_index"] = indexname
     doc["_id"] = doc['pandaid']
 
+
+    #prepare short pilotids without batchsys
+    if doc["pilotid"]:
+        plid_parts = doc["pilotid"].split("|")
+        if len(plid_parts)==3:
+            doc["pilotid"]=plid_parts[0] + "|Unknown|" + plid_parts[1] + "|" + plid_parts[2]
+
     for parser in parsers:
         doc.update(parser.parse(doc[parser.source]))
     if doc['modificationhost'] and '@' in doc['modificationhost']:
@@ -300,7 +308,7 @@ for row in cursor:
 
 estools.bulk_index(data, es)
 print('final count:', count)
-estools.clean_up_oldest_by_diskusage(es, indexbase+"*", 500.0)
+estools.clean_up_oldest_by_diskusage(es, indexbase+"*", 1000.0)
 
 print("Push job indexing meta data:")
 mdoc = {}
