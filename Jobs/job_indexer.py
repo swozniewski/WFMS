@@ -81,7 +81,7 @@ jedi_columns = [
     'JEDI.MERGEWALLTIME', 'JEDI.MERGEWALLTIMEUNIT', 'JEDI.THROTTLEDTIME', 'JEDI.NUMTHROTTLED', 'JEDI.MERGECORECOUNT', 'JEDI.GOAL',
     'JEDI.ASSESSMENTTIME', 'JEDI.CPUTIME', 'JEDI.CPUTIMEUNIT', 'JEDI.CPUEFFICIENCY', 'JEDI.BASEWALLTIME', 'JEDI.AMIFLAG_OLD',
     'JEDI.AMIFLAG', 'JEDI.BASERAMCOUNT', 'JEDI.TTCREQUESTED', 'JEDI.TTCPREDICTED', 'JEDI.TTCPREDICTIONDATE', 'JEDI.RESCUETIME',
-    'JEDI.REQUESTTYPE', 'JEDI.USEJUMBO', 'JEDI.DISKIOUNIT', 'JEDI.MEMORY_LEAK_CORE'
+    'JEDI.REQUESTTYPE', 'JEDI.USEJUMBO', 'JEDI.DISKIOUNIT', 'JEDI.MEMORY_LEAK_CORE', 'JEDI.FRAMEWORK'
 ]
 
 columns += jedi_columns
@@ -122,7 +122,7 @@ escolumns = [
     'jedi_mergewalltime', 'jedi_mergewalltimeunit', 'jedi_throttledtime', 'jedi_numthrottled', 'jedi_mergecorecount', 'jedi_goal',
     'jedi_assessmenttime', 'jedi_cputime', 'jedi_cputimeunit', 'jedi_cpuefficiency', 'jedi_basewalltime', 'jedi_amiflag_old',
     'jedi_amiflag', 'jedi_baseramcount', 'jedi_ttc_requested', 'jedi_ttc_predicted', 'jedi_ttc_predictiondate', 'jedi_rescuetime',
-    'jedi_requesttype', 'jedi_usejumbo', 'jedi_diskiounit', 'jedi_memory_leak_core'
+    'jedi_requesttype', 'jedi_usejumbo', 'jedi_diskiounit', 'jedi_memory_leak_core', 'jedi_framework'
 ]
 
 parsers = []
