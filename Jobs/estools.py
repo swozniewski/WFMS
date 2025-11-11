@@ -1,7 +1,7 @@
 import os
 import time
-from elasticsearch import Elasticsearch, exceptions as es_exceptions
-from elasticsearch import helpers
+from opensearchpy import OpenSearch, exceptions as es_exceptions
+from opensearchpy import helpers
 
 
 def get_es_connection():
@@ -11,13 +11,13 @@ def get_es_connection():
     print("make sure we are connected to ES...")
     try:
         if 'ES_USER' in os.environ and 'ES_PASS' in os.environ and 'ES_HOST' in os.environ:
-            es_conn = Elasticsearch(
+            es_conn = OpenSearch(
                 os.environ['ES_HOST'],
                 http_auth=(os.environ['ES_USER'], os.environ['ES_PASS']),
                 ca_certs="/etc/pki/tls/certs/ca-bundle.trust.crt"
             )
         else:
-            es_conn = Elasticsearch(
+            es_conn = OpenSearch(
                 [{'host': 'atlas-kibana.mwt2.org', 'port': 9200, 'scheme': 'https'}])
         print("connected OK!")
     except es_exceptions.ConnectionError as error:
@@ -60,7 +60,7 @@ def clean_up_oldest_by_diskusage(es_conn, field_regex, limit_du):
     diskusage = 0.0
     indiceslist = []
     try:
-        indicesinfo = es_conn.cat.indices(field_regex)
+        indicesinfo = es_conn.cat.indices(index=field_regex)
         for line in indicesinfo.split("\n"):
             entries = line.split()
             if len(entries)==0:
@@ -97,7 +97,7 @@ def clean_up_oldest_by_diskusage(es_conn, field_regex, limit_du):
 def get_diskusage(es_conn, field_regex):
     diskusage = 0.0
     try:
-        indicesinfo = es_conn.cat.indices(field_regex)
+        indicesinfo = es_conn.cat.indices(index=field_regex)
         for line in indicesinfo.split("\n"):
             entries = line.split()
             if len(entries)==0:
